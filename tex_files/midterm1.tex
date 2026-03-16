@@ -1,0 +1,259 @@
+\chapter{Domain Analysis and Problem Definition}
+
+\section{Domain Analysis}
+
+The domain of digital manufacturing has undergone a profound transformation in recent decades, evolving from manual, operator-dependent processes to highly automated, software-driven workflows. At the heart of this domain lie Computer Numerical Control (CNC) systems, which include a wide array of devices such as 3D printers, laser cutters, milling machines, and robotic arms~\cite{noauthor_global_nodate}. These machines are the fundamental enablers of modern production, allowing for the precise fabrication of physical objects from digital designs. As the demand for customized, on-demand manufacturing grows, the reliability and flexibility of these systems have become paramount~\cite{mavri_survey_2021}.
+
+Digital manufacturing environments are characterized by their reliance on a complex toolchain that translates high-level design concepts into low-level machine instructions. This translation process is critical; any error or inefficiency introduced at this stage directly translates to physical defects, material waste, or machine damage. The ``maker movement'' and the proliferation of fabrication laboratories (FabLabs) have further democratized access to these technologies, bringing industrial-grade capabilities to hobbyists and small businesses~\cite{cycles_topic_nodate, noauthor_between_2025}. However, this democratization has also highlighted significant usability gaps in the underlying control mechanisms of these machines.
+
+\subsection{Machine Control Languages}
+
+The primary mechanism for controlling automated production equipment is through machine control languages, of which G-code (RS-274) is the most ubiquitous standard. Originally developed in the 1950s at the Massachusetts Institute of Technology, G-code has become the de facto language for CNC machining and, more recently, additive manufacturing processes like 3D printing~\cite{arroyo_generating_2011}.
+
+G-code operates as a sequence of imperative instructions that command the machine's hardware directly. These instructions typically fall into several categories. \textbf{Motion Commands (G-words)} control the movement of the tool or the build platform. Common examples include \texttt{G0} for rapid positioning, \texttt{G1} for linear interpolation at a specified feed rate, and \texttt{G2}/\texttt{G3} for clockwise and counter-clockwise circular interpolation. \textbf{Machine Configuration (M-words)} manage auxiliary functions of the machine, such as turning the spindle on or off (\texttt{M3}/\texttt{M5}), controlling coolant flow, or managing tool changes (\texttt{M6}). Additionally, \textbf{Coordinate Systems} commands are used to set work offsets (e.g., \texttt{G54}) and switch between absolute (\texttt{G90}) and relative (\texttt{G91}) positioning modes. Finally, \textbf{Parameters} define values such as feed rate (\texttt{F}), spindle speed (\texttt{S}), and tool selection (\texttt{T}).
+
+Despite its longevity, G-code is fragmented into numerous machine-specific dialects. A 3D printer running Marlin firmware may interpret specific codes differently than a Haas CNC milling machine or a laser cutter running GRBL. This lack of standardization necessitates specific post-processors for every machine, creating a rigid coupling between the software toolchain and the hardware~\cite{tiro_rapid_2025, noauthor_ultimate_nodate}.
+
+\subsection{Characteristics of G-code}
+
+The design of G-code reflects the computational limitations of the era in which it was conceived. It is characterized by a strictly sequential execution model, lack of high-level control flow structures (such as loops or conditionals in standard implementations), and minimal abstraction.
+
+\subsubsection{Low-Level Verbosity}
+G-code is extremely verbose. A simple operation, such as cutting a circle, might be represented by a single command or approximated by hundreds of small linear segments, depending on the post-processor. This verbosity makes G-code files difficult for humans to parse. For example, a 3D print of a moderately complex object can generate hundreds of thousands of lines of code~\cite{beyer_slicer-independent_2026}.
+
+\subsubsection{Machine-Centricity}
+The language is designed for machines, not humans. Coordinates are often just numbers without semantic meaning to a reader. There are no variable names in standard G-code (though some macro dialects support them), and comments are often stripped during generation to save memory on older controllers. This opacity means that understanding \textit{what} a specific block of code does often requires simulating the machine's state mentaly or using external visualization software~\cite{propst_time_2025}.
+
+\subsubsection{Lack of Abstraction}
+Perhaps the most significant limitation is the lack of abstraction. There is no native concept of ``Drill Hole'' or ``Print Layer'' in G-code; there is only ``Move to X,Y'', ``Lower Z'', ``Move Z'', ``Raise Z''. This absence of semantic intent means that once G-code is generated, the original design intent is lost. Modifying the code requires reverse-engineering the geometry from the motion vectors~\cite{abdelaal_gllm_2025}.
+
+\subsection{Current Manufacturing Software Toolchain}
+
+The standard workflow for digital manufacturing follows a linear path: CAD (Computer-Aided Design) $\rightarrow$ CAM (Computer-Aided Manufacturing) / Slicing $\rightarrow$ G-code $\rightarrow$ Machine.
+
+In the \textbf{CAD Phase}, an engineer creates a distinct 3D geometry using parameterized modelling tools (e.g., SolidWorks, Fusion 360). This is followed by the \textbf{CAM/Slicing Phase}, where the geometry is imported into CAM software (for subtractive manufacturing) or a Slicer (for additive manufacturing). Here, the user selects tools, materials, and process parameters, and the software calculates the toolpaths required to produce the part~\cite{noauthor_cad_2024, noauthor_how_2025}. During \textbf{Post-Processing}, the calculated toolpaths are translated by a post-processor into the specific G-code dialect of the target machine. Finally, in the \textbf{Execution} phase, the G-code file is transferred to the machine and executed.
+
+While effective for standard parts, this workflow is strictly one-way. If an error is discovered in the G-code (e.g., a movement that causes a collision but wasn't caught by the simulator), the user must return to the CAM software, adjust parameters, regenerate the toolpath, and re-export the code. There is no easy way to ``tweak'' the behaviour at the machine level effectively and safely. Furthermore, different slicers can produce significantly different G-code for the same geometry, leading to inconsistencies in part quality~\cite{beyer_slicer-independent_2026-1, bryla_study_2021}.
+
+\subsection{Domain-Specific Languages in Engineering}
+
+Domain-Specific Languages (DSLs) offer a powerful alternative to general-purpose languages for specialized problem domains. In engineering, DSLs allow experts to express solutions using concepts and terms familiar to their field, rather than low-level implementation details.
+
+A DSL for manufacturing would bridge the gap between the high-level design intent and the low-level machine instructions. Instead of describing \textit{how} to move a stepper motor (G-code), a user could describe the \textit{operation} to be performed (e.g., \texttt{face\_milling(depth=5mm)}). This raises the abstraction level, making the ``code'' readable, modifiable, and verifiable. DSLs can enforce domain rules (e.g., ``spindle must be on before moving into material'') at compile time, preventing costly accidents that raw G-code would happily execute~\cite{zhang_still_2026}.
+
+The introduction of such an intermediate language is motivated by the need for greater transparency, flexibility, and safety in modern digital manufacturing. As machines become more capable and manufacturing processes more complex, the limitations of the antiquated G-code standard become an increasing bottleneck~\cite{arroyo_generating_2011, noauthor_auto-seg_2026}.
+
+In summary, the domain analysis reveals a critical disconnect between the sophisticated capabilities of modern hardware and the primitive, rigid nature of the language used to control them.
+
+\section{Problem Description}
+
+The core problem addressed by this project is the lack of a human-centric, flexible, and robust method for defining and modifying manufacturing machine operations. Despite the advancements in CAD/CAM software, the final link in the chain—the machine instruction set—remains a ``black box'' for many users.
+
+\subsection{Who Experiences the Problem?}
+
+This problem profoundly affects a diverse range of practitioners within the manufacturing ecosystem. \textbf{Manufacturing Engineers and Technicians} are responsible for the efficient operation of CNC machinery. When a generated toolpath is suboptimal—for example, containing unnecessary ``air cuts'' or inefficient travel moves—they often lack a quick, safe way to clear non-productive movements without regenerating the entire project from the CAM software~\cite{abdeljabbar_digital_2025}. \textbf{Machine Operators} on the shop floor need to make minor adjustments to account for tool wear, material variations, or fixture offsets. Editing raw G-code manually is risky; a misplaced decimal point can crash a machine worth hundreds of thousands of dollars.
+
+Furthermore, \textbf{Fabrication Lab (FabLab) Managers and Makers} frequently encounter artifacts in ``slicing'' for 3D printing that need correction. Advanced hobbyists often want to insert custom commands (e.g., pausing for a magnet insertion, changing temperature at a specific layer) but find G-code editing cumbersome and error-prone~\cite{mavri_survey_2021}. Finally, \textbf{Research Engineers} developing new manufacturing techniques (e.g., non-planar 3D printing, hybrid additive-subtractive processes) find standard CAM software limiting because it assumes conventional workflows. They need a way to program novel machine behaviors that existing software cannot generate~\cite{riffel_artificial_2025}.
+
+\subsection{Why is this a Significant Problem?}
+
+The significance of this problem stems from the inefficiency and risk inherent in the current workflow.
+
+\textbf{G-code is not Human-Friendly:} Reading G-code is akin to reading assembly language. It requires significant mental effort to map coordinates to physical space. This opacity hinders debugging. If a machine behaves unexpectedly, identifying the culprit line among thousands is a needle-in-a-haystack problem~\cite{tiro_rapid_2025}.
+
+\textbf{Manual Editing is Error-Prone:} Manual modifications are often text-based search-and-replace operations. These are fragile. Modifying a feed rate globally might accidentally affect rapid travel moves if not done carefully. The lack of semantic validation means the machine will attempt to execute physically impossible or dangerous commands if they are syntactically valid G-code~\cite{staggs_manipulation_2022}.
+
+\textbf{CAM Tools Hide Behavior:} While CAM tools are powerful, they often hide the logic used to generate paths. Users who need to optimize a specific segment of the process are often forced to fight the software's defaults, finding it easier to wish they could just ``write the code'' themselves—if only the code were writable.
+
+\textbf{Customization Difficulty:} In scenarios like mass customization or distributed manufacturing, there is often a need to generate variations of a part programmatically. Generating G-code directly from scripts (e.g., Python) is common but lacks structure and validation, leading to ``spaghetti code'' generators that are hard to maintain.
+
+\subsection{Stakeholders}
+
+The key stakeholders include \textbf{Primary Stakeholders} such as machine operators, manufacturing engineers, and CNC programmers, as well as \textbf{Secondary Stakeholders} like production managers (concerned with downtime and efficiency), software developers (building manufacturing tools), and hardware vendors (interested in better ecosystem integration).
+
+\subsection{Relevance in the Current Landscape}
+
+The problem is becoming increasingly relevant due to the explosion of digital manufacturing. The global market for 3D printers and CNC machines is expanding rapidly~\cite{noauthor_global_nodate}. As more non-experts enter the field, the barrier to entry presented by cryptic machine codes becomes a significant hurdle. Furthermore, security concerns regarding G-code manipulation and the need for validation frameworks highlight the necessity for a more structured approach to machine control~\cite{noauthor_machine_2025, staggs_manipulation_2022}.
+
+\section{Problem Analysis}
+
+To fully understand the necessity for a new solution, we must analyze the underlying technical causes of the difficulties associated with G-code and the impact these issues have on the manufacturing domain.
+
+\subsection{Technical Causes}
+
+The root causes of the problem are deeply embedded in the legacy architecture of numerical control systems.
+
+\subsubsection{Low-Level Structure and Lack of Context}
+The fundamental issue is that G-code represents \textit{state changes} rather than \textit{intent}. A command like \texttt{G1 X10 Y10 E0.5} tells a 3D printer to move and extrude. It does not say \textit{why}. Is this an outer wall? An infill pattern? A support structure? Because the context is lost during generation, any subsequent modification or optimization must infer distinct features from raw coordinates. This makes ``intelligent'' editing impossible at the code level~\cite{abdelaal_gllm_2025}.
+
+\subsubsection{Machine-Specific Dialect Variations}
+The fragmentation of G-code dialects means that a script written for one machine is rarely portable to another without modification. This violates the principle of ``write once, run anywhere'' that is standard in modern software development. The variability lies not just in specific codes, but in how parameters are interpreted (e.g., relative vs. absolute arc centers), leading to subtle and dangerous bugs~\cite{noauthor_secrets_nodate}.
+
+\subsubsection{Complex Motion Planning Requirements}
+Modern machines require complex acceleration and deceleration profiles (look-ahead) to move smoothly. While the controller handles the dynamics, the G-code must provide the trajectory. Manually calculating tangent points for smooth circular transitions or calculating extrusion volumes for 3D printing is mathematically intensive and impractical for humans, enforcing reliance on ``black box'' CAM software.
+
+\subsection{Domain Impact}
+
+These technical limitations manifest as tangible inefficiencies in the manufacturing workflow.
+
+\textbf{Slower Workflows and Iteration Cycles:} The inability to quickly edit instructions means that minor changes require a round-trip to the CAD/CAM station. In a prototyping environment, where the machine might differ from the designer's desk, this latency accumulates, slowing down the iteration cycle considerably.
+
+\textbf{Barriers to Entry:} For students and hobbyists, the learning curve is steep. Understanding why a printer failed requires learning the arcane syntax of G-code to diagnose if the issue was mechanical or software-defined.
+
+\textbf{Increased Probability of Human Error:} The cognitive load required to interpret raw G-code leads to fatigue and oversight. In industrial settings, crashes caused by bad code can lead to weeks of downtime and expensive repairs.
+
+\subsection{Scenario: The Modification Bottleneck}
+
+Consider a realistic scenario involving a manufacturing engineer, Alice, who is setting up a CNC milling operation for a new aluminium housing. She generates the G-code using a high-end CAM package.
+
+Upon running the first air-cut (a test run without material), she notices that the tool retracts to a safe height of 50mm between every single operation. For this specific fixture, a retraction to 10mm would be perfectly safe and would save 5 minutes of cycle time per part. Over a production run of 1000 parts, this saves over 80 hours of machine time.
+
+\textit{The Problem:} Alice cannot simply ``change the retraction height'' in the G-code file easily.
+1. She opens the G-code file, which is 50,000 lines long.
+2. She searches for ``Z50''. It appears hundreds of times.
+3. She cannot simply doing a ``Find and Replace All'' because ``Z50'' might typically be used in the setup sequence or the end sequence where it \textit{is} required for safety.
+4. She must manually verify which ``Z50'' commands are the inter-operation retracts and which are the safe-home retracts.
+5. Alternatively, she goes back to the CAM software. She has to find the specific ``Retract Height'' parameter, which might be buried in a ``feeds and speeds'' submenu or defined globally in the machine definition.
+6. She changes it, regenerates the code, and then has to re-transfer the file to the machine controller.
+
+This process is frustratingly inefficient. If Alice had a readable, structured representation of the process, she could have simply modified a variable like \texttt{safe\_retract\_height = 10mm} and re-compiled, confident that the change would propagate correctly to the relevant operational blocks.
+
+Summary: The current state of affairs forces a trade-off between the safety of trusted but rigid CAM generation and the flexibility but danger of manual G-code editing.
+
+\section{Problem Statement}
+
+\textbf{Manufacturing practitioners lack an accessible, programmable, and expressive method for modelling and modifying machine operations because existing workflows rely wholly on either complex, opaque CAM systems or low-level, difficult-to-interpret G-code instructions.}
+
+\textit{Elaboration:} This statement highlights the gap in the current ecosystem. ``Accessible'' refers to the ease of use for non-computer-scientists. ``Programmable'' indicates the need for logic (loops, variables) which static G-code lacks. ``Expressive'' implies the ability to capture intent (e.g., ``drill hole'') rather than just movement. The problem is framed as a dichotomy between high-level tools that offer little control over the output details and low-level output that offers total control but zero usability. The proposed DSL seeks to occupy the middle ground.
+
+\section{Proposed Solution}
+
+To address the limitations of G-code and the rigidity of standard CAM workflows, this project proposes the development of a **Copilot Instruction Plan DSL (Domain-Specific Language)**. This language will serve as an intermediate abstraction layer between user intent and machine execution.
+
+\subsection{Conceptual Architecture}
+
+The proposed system operates on a compilation model similar to software development languages. The process begins with the \textbf{Source Model (DSL)}, where the user defines the manufacturing process using high-level commands, variable definitions, and control structures. This file is human-readable and semantically rich. Next, the \textbf{Parser and Validator} reads the source file, parsing the syntax and performing semantic validation. It checks for errors such as undefined variables, out-of-bounds parameters, or logical inconsistencies. The valid model is then transformed through \textbf{Translation/compilation} into an abstract syntax tree (AST) and processed to generate the target machine instructions. Finally, the \textbf{Output (G-code)} is emitted as standard, optimized G-code compatible with the specific target machine (e.g., Marlin, GRBL, Fanuc).
+
+This architecture decouples the description of the \textit{operation} from the implementation of the \textit{instruction}.
+
+\subsection{Advantages of the DSL Approach}
+
+\subsubsection{Higher Readability}
+The DSL uses English-like syntax and meaningful keywords. Instead of \texttt{G0 Z5.0}, the code might read \texttt{MoveTo(Z=SafeHeight)}. This self-documenting nature makes it easier for teams to collaborate on manufacturing scripts and for new users to understand existing processes~\cite{zhang_still_2026}.
+
+\subsubsection{Reusable Abstractions}
+Users can define functions or macros for common tasks. If a specific cleaning wiping motion is required before every print, it can be defined once as a function \texttt{WipeNozzle()} and called repeatedly. In standard G-code, this sequence of movements would have to be copy-pasted every time, leading to bloated and unmaintainable files.
+
+\subsubsection{Easier Editing of Machine Behaviour}
+Modifying process parameters becomes trivial. Changing the feed rate for a specific type of movement requires changing one variable definition at the top of the file. The compiler ensures this change propagates consistently throughout the generated code~\cite{abdelaal_gllm_2025}.
+
+\subsubsection{Safer Workflow}
+The compiler acts as a safety barrier. It can enforce constraints such as maximum feed rates, travel limits, or forbidden zones. It can warn the user if a generated path would exceed the machine's build volume, catching errors \textit{before} the machine starts moving~\cite{noauthor_auto-seg_2026}.
+
+\subsection{Example Scenario: User Interaction}
+
+Imagine a researcher, Bob, testing a new type of material deposit strategy that requires a zigzag pattern with varying speed.
+
+\textbf{Without DSL:} Bob tries to draw the zigzag in CAD, but setting the variable speed is impossible in standard CAM. He resorts to writing a Python script to print strings of ``G1 X\dots F\dots'' commands. His script is buggy, 200 lines long, and hard to debug.
+
+\textbf{With DSL:} Bob writes a short DSL script:
+
+\begin{verbatim}
+speed_fast = 3000
+speed_slow = 500
+y_pos = 0
+
+repeat(10) {
+    Move(x=0, y=y_pos, speed=speed_fast)
+    y_pos = y_pos + 1
+    Move(x=100, y=y_pos, speed=speed_slow)
+    y_pos = y_pos + 1
+}
+\end{verbatim}
+
+The DSL compiler takes this concise looping construct and unrolls it into the correct sequence of G-code coordinates. Bob can easily change the number of repetitions or the speeds and re-generate the file in seconds. This example illustrates how the DSL empowers users to express algorithmic intent that is cumbersome to define in both CAD and raw G-code.
+
+\subsection{Summary}
+The proposed solution moves the complexity from the user's manual effort to the compiler's logic. By treating manufacturing instructions as software code, we can apply software engineering best practices—modularity, reuse, validation—to the physical world of manufacturing.
+
+\section{Target Users and Customer Validation}
+
+The success of the DSL depends on its adoption by key user groups who currently face friction in the manufacturing workflow.
+
+\subsection{Target User Groups}
+
+\textbf{Manufacturing Engineers} constitute the primary user base for industrial applications. They require fine-grained control over machine operations to optimize cycle times and ensure quality. A DSL allows them to build libraries of optimized routines for specific materials or parts, creating a knowledge base that is currently lost in disconnected G-code files. \textbf{Machine Operators and Technicians} often need to make ``quick fixes'' on the shop floor. A readable DSL allows them to understand what a program is intended to do without needing to act as a human G-code parser. It empowers them to make safe adjustments (e.g., speed overrides, offset changes) within a controlled framework.
+
+The \textbf{Maker community} is a significant driver of 3D printing innovation. Hobbyists frequently experiment with non-standard modifications to their machines (e.g., plotting with pens, paste extrusion). A DSL provides them with an accessible tool to program these custom tools without writing full-blown firmware or post-processors~\cite{mavri_survey_2021}. Similarly, \textbf{Research Engineers} in academic and industrial settings experimenting with new fabrication processes (e.g., 4D printing, functionally graded materials) need to step outside the bounds of commercial CAM software. The DSL provides a flexible platform for defining novel toolpath strategies that standard slicers simply cannot generate~\cite{riffel_artificial_2025}.
+
+\subsection{Customer Validation}
+Validation logic suggests that these users are actively seeking alternatives. The prevalence of custom Python scripts, spreadsheets for G-code calculation, and forum threads asking ``how to edit G-code'' serves as validation of the unmet need. By providing a structured, robust tool, the DSL addresses a clear pain point in the market.
+
+\section{Comparative Analysis}
+
+To situate the proposed solution within the existing technology landscape, we compare it against the two dominant approaches: Raw G-code programming and CAD/CAM Systems.
+
+\subsection{Approach 1: Raw G-code Programming}
+
+Writing commands directly in a text editor offers ultimate control, making every byte of the file explicit without ``hidden'' behaviors inserted by software. It also requires no expensive software licenses. However, it is extremely tedious and error-prone. Calculating coordinates for complex geometries (e.g., a splined curve) is practically impossible for a human. It lacks safety checks; a typo can cause physical damage. Debugging is difficult due to low readability~\cite{tiro_rapid_2025}.
+
+\subsection{Approach 2: CAD/CAM Systems}
+
+Using graphical software to model parts and generate toolpaths automatically is highly efficient for complex geometry, and visual simulation prevents many errors. It is the industry standard for part production~\cite{noauthor_cad_2024}. Disadvantages include acting as a ``black box,'' where users have limited control over the specific G-code output. Customizing the output requires editing complex ``post-processor'' files, which is disjointed from the user interface. It is often expensive and resource-heavy~\cite{noauthor_how_2025}.
+
+\subsection{Approach 3: Proposed DSL}
+
+An intermediate textual language that compiles to G-code combines the precision of coding with the abstraction of high-level software. It allows for ``algorithmic usage'' (loops, logic) which CAM lacks and G-code handles poorly. It produces standard G-code, maintaining compatibility with existing machines. It is text-based, making it version-control friendly (Git). However, it requires users to learn a new syntax and is not suitable for designing organic 3D shapes (sculpting), which is better left to CAD. It represents a shift in mindset from ``drawing'' to ``programming'' manufacturing.
+
+\textit{Conclusion:} The DSL does not replace CAD/CAM for complex geometry but complements it by handling algorithmic, repetitive, or highly customized machine operations where standard CAM fails. It replaces raw G-code editing entirely~\cite{noauthor_secrets_nodate}.
+
+\section{PBL Problem Map}
+
+This section outlines the Problem-Based Learning (PBL) map for the project, structuring the investigation and solution space.
+
+\subsection{Problem Situation}
+
+The manufacturing industry relies heavily on Computer Numerical Control (CNC) machines to interpret digital designs into physical products. Currently, the industry standard for communicating with these machines is G-code, a language developed in the 1950s. While robust, G-code is cryptic, unstructured, and difficult for humans to read or modify safely.
+
+Modern workflows involve generating this code via CAD/CAM software, which effectively hides the code from the user. However, when engineers, researchers, or operators need to customize machine behavior, debug errors, or optimize specific movements, they are forced to interact directly with this user-unfriendly low-level code. There is no intermediate tool that allows for high-level, programmable control of the machine without the overhead of full CAD/CAM systems or the risk of manual text editing.
+
+The absence of such a tool leads to inefficiencies, increased risk of machine damage, and a barrier to innovation in experimental manufacturing processes. Users resort to ad-hoc scripts or manual hacking of files, which is sustainable for neither industrial production nor advanced research.
+
+\subsection{Problem Sentence}
+\textbf{There is a lack of an intermediate, expressive modelling language that allows manufacturing professionals to program and modify machine operations efficiently, bridging the gap between rigid CAD/CAM generators and low-level G-code instructions.}
+
+\subsection{Structured Analysis}
+
+The analysis can be broken down into specific components. \textbf{Who:} Manufacturing engineers, CNC operators, 3D printing specialists, researchers, and makers. \textbf{What:} The difficulty in creating, reading, and verifying machine instructions (G-code) due to its low-level nature and lack of abstraction. \textbf{Where:} In fabrication laboratories, extensive manufacturing plants, prototyping workshops, and research facilities globally. \textbf{When:} During the ``post-processing'' phase of manufacturing, immediately before production, or during the optimization of repetitive production cycles. \textbf{Why:} Because G-code is archaic and verbose, while CAD/CAM is opaque and inflexible. An intermediate layer is needed to provide control and safety. \textbf{How:} By developing a Domain-Specific Language (DSL) and a compiler that translates high-level intents into valid machine code. \textbf{How Much:} The scale affects the entire digital manufacturing industry. Reducing setup time by even small percentages can save millions in industrial contexts; enabling research can lead to new manufacturing paradigms.
+
+\subsection{Deliverable}
+The project will deliver a \textbf{DSL Language Specification} defining the syntax and semantics for machine operations, and a \textbf{Prototype Transpiler/Compiler} capable of converting DSL source files into valid, machine-readable G-code.
+
+\subsection{Conclusion}
+The PBL analysis confirms that the problem is well-defined, impacts a significant user base, and has a clear technological solution. The development of the DSL addresses the root causes of opacity and rigidity in the current workflow.
+
+\section{Initial DSL Requirements}
+
+To effectively solve the identified problem, the DSL must meet the following functional requirements.
+
+\subsection{Motion and Geometry}
+The DSL must support the core requirement of describing movement in physical space. This includes \textbf{Linear Motion} for precise control over straight-line movements (G0, G1) in 3D space (X, Y, Z), and \textbf{Arc/Circular Motion} to define curves and circles (G2, G3) intuitively, potentially abstracting away the complex center-point calculations required by raw G-code. Furthermore, \textbf{Coordinate Systems} support is essential for absolute and relative positioning, allowing users to define movements relative to the current position (useful for patterns) or relative to the machine origin~\cite{propst_time_2025}.
+
+\subsection{Machine Operations}
+Beyond movement, the language must control the machine's state. This encompasses \textbf{Tool Control} commands to start/stop spindles, control laser power, or manage extruder temperatures, as well as \textbf{Tool Changes} via high-level commands (e.g., `SwitchTool(T1)`) which the compiler translates into the safe sequence of retraction, changes, and priming. It must also support \textbf{Wait/Pause} instructions to dwell or pause for operator intervention.
+
+\subsection{Abstraction and Control Flow}
+These are the key differentiators from G-code. \textbf{Variables and Parameters} allow users to define values (e.g., \texttt{layer\_height}, \texttt{travel\_speed}) and use them throughout the script. \textbf{Loops and Repetition} constructs enable repeating operations (e.g., for creating layers or grid patterns) without copy-pasting code. Finally, \textbf{Modular definitions} provide the ability to define reusable blocks or functions (macros) for common geometry or setup sequences~\cite{arroyo_generating_2011}.
+
+\subsection{Code Generation}
+The system must ensure \textbf{Validity}, meaning the output must be syntactically valid G-code. It must also ensure \textbf{Compatibility}, supporting configuration for different G-code ``flavors'' (e.g., Marlin vs. standard NIST G-code).
+
+\section{Constraints and Assumptions}
+
+The project is bounded by specific constraints and relies on certain assumptions to be feasible.
+
+\subsection{Constraints}
+The project must adhere to \textbf{G-code Standard Compatibility}, ensuring the generated output adheres to the RS-274 standard (or common industry variations), as we cannot invent a new protocol that requires firmware changes on the machines. \textbf{Safety} is paramount; the DSL compiler must not generate instructions that are inherently dangerous (e.g., negative extrusion, movement beyond physical limits if dimensions are known). Finally, \textbf{Determinism} dictates that the compilation process must be deterministic, where the same DSL input always produces the exact same G-code output.
+
+\subsection{Assumptions}
+We assume \textbf{User Knowledge}, meaning the target user understands the basic principles of CNC machining (e.g., coordinate systems, feed rates); the DSL simplifies the \textit{coding}, not the \textit{physics}. We also assume a \textbf{Preprocessing Layer} architecture where the DSL functions as a pre-processor running on a computer to generate a file sent to the machine, rather than a real-time interpreter on the microcontroller. Finally, we assume \textbf{Target Machine Capabilities} include the execution of standard G-code commands.
