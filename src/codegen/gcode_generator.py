@@ -1,7 +1,8 @@
 from typing import List, Any
 from src.ast_nodes.program import Program
 from src.ast_nodes.statements import (
-    Statement, VariableDeclaration, Assignment, Block, MoveStatement, IfStatement, RepeatStatement
+    Statement, VariableDeclaration, Assignment, Block, MoveStatement, IfStatement, RepeatStatement,
+    TemperatureStatement, PauseStatement, StopStatement, WaitStatement, SetStatement, AddShapeStatement
 )
 from src.ast_nodes.expressions import (
     Expression, BinaryExpression, UnaryExpression, Literal, Identifier
@@ -40,9 +41,25 @@ class GCodeGenerator:
             self.env[stmt.identifier] = val
             self.gcode_lines.append(f"; Variable assign: {stmt.identifier} = {val}")
         elif isinstance(stmt, MoveStatement):
-            x = self.evaluate(stmt.x)
-            y = self.evaluate(stmt.y)
-            self.gcode_lines.append(f"G1 X{x} Y{y}")
+            if stmt.target:
+                t = stmt.target
+                if isinstance(t, dict):
+                    if t['type'] == 'axis_pair':
+                        # Parse X10 Y20
+                        # simplistic parsing
+                        vals = t['values']
+                        self.gcode_lines.append(f"G1 {vals[0]} {vals[1]}")
+                    elif t['type'] == 'point' and t['name'].lower() == 'origin':
+                        self.gcode_lines.append("G1 X0 Y0")
+                    elif t['type'] == 'point':
+                        self.gcode_lines.append(f"; Move to {t['name']} (unresolved)")
+                    elif t['type'] == 'named':
+                        self.gcode_lines.append(f"; Move to user location {t['name']}")
+            else:
+                # Fallback for old style
+                x = self.evaluate(stmt.x)
+                y = self.evaluate(stmt.y)
+                self.gcode_lines.append(f"G1 X{x} Y{y}")
         elif isinstance(stmt, Block):
             for s in stmt.statements:
                 self.visit_statement(s)
@@ -63,6 +80,40 @@ class GCodeGenerator:
                  self.visit_statement(stmt.then_branch)
              elif stmt.else_branch:
                  self.visit_statement(stmt.else_branch)
+        elif isinstance(stmt, TemperatureStatement):
+             val = self.evaluate(stmt.value)
+             self.gcode_lines.append(f"M104 S{val} ; Set Temp")
+        elif isinstance(stmt, PauseStatement):
+             layer = self.evaluate(stmt.layer)
+             self.gcode_lines.append(f"; PAUSE AT LAYER {layer}")
+             self.gcode_lines.append("M0") # Marlin pause
+        elif isinstance(stmt, StopStatement):
+             self.gcode_lines.append("; STOP")
+             self.gcode_lines.append("M0")
+        elif isinstance(stmt, WaitStatement):
+             dur = self.evaluate(stmt.duration)
+             seconds = dur if stmt.unit == "seconds" else dur * 60
+             self.gcode_lines.append(f"G4 S{seconds} ; Wait")
+        elif isinstance(stmt, SetStatement):
+             val = self.evaluate(stmt.expression)
+             self.env[stmt.identifier] = val
+             self.gcode_lines.append(f"; Set {stmt.identifier} = {val}")
+        elif isinstance(stmt, AddShapeStatement):
+             self.gcode_lines.append(f"; Add Shape {stmt.shape_type}")
+             # Generate geometric path (simplified)
+             if stmt.shape_type == "square":
+                 params = stmt.params
+                 center = params.get("center", [0,0])
+                 length = params.get("length", 10)
+                 cx, cy = center
+                 half = length / 2
+                 self.gcode_lines.append(f"; Square Center {cx},{cy} Size {length}")
+                 # Move to corners
+                 self.gcode_lines.append(f"G0 X{cx-half} Y{cy-half}")
+                 self.gcode_lines.append(f"G1 X{cx+half} Y{cy-half}")
+                 self.gcode_lines.append(f"G1 X{cx+half} Y{cy+half}")
+                 self.gcode_lines.append(f"G1 X{cx-half} Y{cy+half}")
+                 self.gcode_lines.append(f"G1 X{cx-half} Y{cy-half}")
 
     def evaluate(self, expr: Expression) -> Any:
         if isinstance(expr, Literal):
