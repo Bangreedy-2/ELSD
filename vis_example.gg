@@ -1,0 +1,12 @@
+Define startPoint as 10 10
+Set speed to 100
+
+Repeat 3 times {
+    Move to startPoint
+    Move to X20 Y20
+}
+
+If 1 < 2 then {
+    Stop at 10mm
+}
+

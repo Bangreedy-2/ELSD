@@ -1,4 +1,4 @@
-# Generated from src/grammar/GGCode.g4 by ANTLR 4.9.3
+# Generated from C:\Users\klyuk\ML\ELSD\src\grammar\GGCode.g4 by ANTLR 4.9.3
 # encoding: utf-8
 from antlr4 import *
 from io import StringIO
@@ -392,14 +392,6 @@ class GGCodeParser ( Parser ):
         def getRuleIndex(self):
             return GGCodeParser.RULE_program
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterProgram" ):
-                listener.enterProgram(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitProgram" ):
-                listener.exitProgram(self)
-
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitProgram" ):
                 return visitor.visitProgram(self)
@@ -445,14 +437,6 @@ class GGCodeParser ( Parser ):
 
         def getRuleIndex(self):
             return GGCodeParser.RULE_statementList
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterStatementList" ):
-                listener.enterStatementList(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitStatementList" ):
-                listener.exitStatementList(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitStatementList" ):
@@ -512,14 +496,6 @@ class GGCodeParser ( Parser ):
 
         def getRuleIndex(self):
             return GGCodeParser.RULE_statement
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterStatement" ):
-                listener.enterStatement(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitStatement" ):
-                listener.exitStatement(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitStatement" ):
@@ -585,14 +561,6 @@ class GGCodeParser ( Parser ):
 
         def getRuleIndex(self):
             return GGCodeParser.RULE_simpleStatement
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterSimpleStatement" ):
-                listener.enterSimpleStatement(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitSimpleStatement" ):
-                listener.exitSimpleStatement(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitSimpleStatement" ):
@@ -665,14 +633,6 @@ class GGCodeParser ( Parser ):
         def getRuleIndex(self):
             return GGCodeParser.RULE_compoundStatement
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterCompoundStatement" ):
-                listener.enterCompoundStatement(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitCompoundStatement" ):
-                listener.exitCompoundStatement(self)
-
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitCompoundStatement" ):
                 return visitor.visitCompoundStatement(self)
@@ -743,14 +703,6 @@ class GGCodeParser ( Parser ):
         def getRuleIndex(self):
             return GGCodeParser.RULE_motionStatement
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterMotionStatement" ):
-                listener.enterMotionStatement(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitMotionStatement" ):
-                listener.exitMotionStatement(self)
-
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitMotionStatement" ):
                 return visitor.visitMotionStatement(self)
@@ -820,14 +772,6 @@ class GGCodeParser ( Parser ):
         def getRuleIndex(self):
             return GGCodeParser.RULE_moveStatement
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterMoveStatement" ):
-                listener.enterMoveStatement(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitMoveStatement" ):
-                listener.exitMoveStatement(self)
-
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitMoveStatement" ):
                 return visitor.visitMoveStatement(self)
@@ -874,14 +818,6 @@ class GGCodeParser ( Parser ):
 
         def getRuleIndex(self):
             return GGCodeParser.RULE_homeStatement
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterHomeStatement" ):
-                listener.enterHomeStatement(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitHomeStatement" ):
-                listener.exitHomeStatement(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitHomeStatement" ):
@@ -935,14 +871,6 @@ class GGCodeParser ( Parser ):
         def getRuleIndex(self):
             return GGCodeParser.RULE_axisList
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterAxisList" ):
-                listener.enterAxisList(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitAxisList" ):
-                listener.exitAxisList(self)
-
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitAxisList" ):
                 return visitor.visitAxisList(self)
@@ -990,14 +918,6 @@ class GGCodeParser ( Parser ):
 
         def getRuleIndex(self):
             return GGCodeParser.RULE_axis
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterAxis" ):
-                listener.enterAxis(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitAxis" ):
-                listener.exitAxis(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitAxis" ):
@@ -1052,14 +972,6 @@ class GGCodeParser ( Parser ):
 
         def getRuleIndex(self):
             return GGCodeParser.RULE_moveTarget
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterMoveTarget" ):
-                listener.enterMoveTarget(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitMoveTarget" ):
-                listener.exitMoveTarget(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitMoveTarget" ):
@@ -1135,14 +1047,6 @@ class GGCodeParser ( Parser ):
         def getRuleIndex(self):
             return GGCodeParser.RULE_coordinateTarget
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterCoordinateTarget" ):
-                listener.enterCoordinateTarget(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitCoordinateTarget" ):
-                listener.exitCoordinateTarget(self)
-
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitCoordinateTarget" ):
                 return visitor.visitCoordinateTarget(self)
@@ -1213,14 +1117,6 @@ class GGCodeParser ( Parser ):
         def getRuleIndex(self):
             return GGCodeParser.RULE_axisSingle
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterAxisSingle" ):
-                listener.enterAxisSingle(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitAxisSingle" ):
-                listener.exitAxisSingle(self)
-
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitAxisSingle" ):
                 return visitor.visitAxisSingle(self)
@@ -1262,14 +1158,6 @@ class GGCodeParser ( Parser ):
 
         def getRuleIndex(self):
             return GGCodeParser.RULE_axisPair
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterAxisPair" ):
-                listener.enterAxisPair(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitAxisPair" ):
-                listener.exitAxisPair(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitAxisPair" ):
@@ -1314,14 +1202,6 @@ class GGCodeParser ( Parser ):
 
         def getRuleIndex(self):
             return GGCodeParser.RULE_axisTriplet
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterAxisTriplet" ):
-                listener.enterAxisTriplet(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitAxisTriplet" ):
-                listener.exitAxisTriplet(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitAxisTriplet" ):
@@ -1370,14 +1250,6 @@ class GGCodeParser ( Parser ):
         def getRuleIndex(self):
             return GGCodeParser.RULE_measurePair
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterMeasurePair" ):
-                listener.enterMeasurePair(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitMeasurePair" ):
-                listener.exitMeasurePair(self)
-
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitMeasurePair" ):
                 return visitor.visitMeasurePair(self)
@@ -1422,14 +1294,6 @@ class GGCodeParser ( Parser ):
 
         def getRuleIndex(self):
             return GGCodeParser.RULE_measureTriplet
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterMeasureTriplet" ):
-                listener.enterMeasureTriplet(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitMeasureTriplet" ):
-                listener.exitMeasureTriplet(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitMeasureTriplet" ):
@@ -1480,14 +1344,6 @@ class GGCodeParser ( Parser ):
         def getRuleIndex(self):
             return GGCodeParser.RULE_pointTarget
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterPointTarget" ):
-                listener.enterPointTarget(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitPointTarget" ):
-                listener.exitPointTarget(self)
-
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitPointTarget" ):
                 return visitor.visitPointTarget(self)
@@ -1532,14 +1388,6 @@ class GGCodeParser ( Parser ):
 
         def getRuleIndex(self):
             return GGCodeParser.RULE_namedTarget
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterNamedTarget" ):
-                listener.enterNamedTarget(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitNamedTarget" ):
-                listener.exitNamedTarget(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitNamedTarget" ):
@@ -1586,14 +1434,6 @@ class GGCodeParser ( Parser ):
 
         def getRuleIndex(self):
             return GGCodeParser.RULE_stopStatement
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterStopStatement" ):
-                listener.enterStopStatement(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitStopStatement" ):
-                listener.exitStopStatement(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitStopStatement" ):
@@ -1646,14 +1486,6 @@ class GGCodeParser ( Parser ):
 
         def getRuleIndex(self):
             return GGCodeParser.RULE_pauseStatement
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterPauseStatement" ):
-                listener.enterPauseStatement(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitPauseStatement" ):
-                listener.exitPauseStatement(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitPauseStatement" ):
@@ -1708,14 +1540,6 @@ class GGCodeParser ( Parser ):
 
         def getRuleIndex(self):
             return GGCodeParser.RULE_machineStatement
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterMachineStatement" ):
-                listener.enterMachineStatement(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitMachineStatement" ):
-                listener.exitMachineStatement(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitMachineStatement" ):
@@ -1778,14 +1602,6 @@ class GGCodeParser ( Parser ):
         def getRuleIndex(self):
             return GGCodeParser.RULE_temperatureStatement
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterTemperatureStatement" ):
-                listener.enterTemperatureStatement(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitTemperatureStatement" ):
-                listener.exitTemperatureStatement(self)
-
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitTemperatureStatement" ):
                 return visitor.visitTemperatureStatement(self)
@@ -1834,14 +1650,6 @@ class GGCodeParser ( Parser ):
         def getRuleIndex(self):
             return GGCodeParser.RULE_waitStatement
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterWaitStatement" ):
-                listener.enterWaitStatement(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitWaitStatement" ):
-                listener.exitWaitStatement(self)
-
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitWaitStatement" ):
                 return visitor.visitWaitStatement(self)
@@ -1887,14 +1695,6 @@ class GGCodeParser ( Parser ):
 
         def getRuleIndex(self):
             return GGCodeParser.RULE_useStatement
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterUseStatement" ):
-                listener.enterUseStatement(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitUseStatement" ):
-                listener.exitUseStatement(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitUseStatement" ):
@@ -1942,14 +1742,6 @@ class GGCodeParser ( Parser ):
 
         def getRuleIndex(self):
             return GGCodeParser.RULE_durationValue
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterDurationValue" ):
-                listener.enterDurationValue(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitDurationValue" ):
-                listener.exitDurationValue(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitDurationValue" ):
@@ -2007,14 +1799,6 @@ class GGCodeParser ( Parser ):
         def getRuleIndex(self):
             return GGCodeParser.RULE_temperatureValue
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterTemperatureValue" ):
-                listener.enterTemperatureValue(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitTemperatureValue" ):
-                listener.exitTemperatureValue(self)
-
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitTemperatureValue" ):
                 return visitor.visitTemperatureValue(self)
@@ -2054,14 +1838,6 @@ class GGCodeParser ( Parser ):
 
         def getRuleIndex(self):
             return GGCodeParser.RULE_geometryStatement
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterGeometryStatement" ):
-                listener.enterGeometryStatement(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitGeometryStatement" ):
-                listener.exitGeometryStatement(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitGeometryStatement" ):
@@ -2105,14 +1881,6 @@ class GGCodeParser ( Parser ):
 
         def getRuleIndex(self):
             return GGCodeParser.RULE_addStatement
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterAddStatement" ):
-                listener.enterAddStatement(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitAddStatement" ):
-                listener.exitAddStatement(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitAddStatement" ):
@@ -2167,14 +1935,6 @@ class GGCodeParser ( Parser ):
 
         def getRuleIndex(self):
             return GGCodeParser.RULE_shapeStatement
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterShapeStatement" ):
-                listener.enterShapeStatement(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitShapeStatement" ):
-                listener.exitShapeStatement(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitShapeStatement" ):
@@ -2242,14 +2002,6 @@ class GGCodeParser ( Parser ):
         def getRuleIndex(self):
             return GGCodeParser.RULE_squareStatement
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterSquareStatement" ):
-                listener.enterSquareStatement(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitSquareStatement" ):
-                listener.exitSquareStatement(self)
-
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitSquareStatement" ):
                 return visitor.visitSquareStatement(self)
@@ -2295,14 +2047,6 @@ class GGCodeParser ( Parser ):
 
         def getRuleIndex(self):
             return GGCodeParser.RULE_squareParameters
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterSquareParameters" ):
-                listener.enterSquareParameters(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitSquareParameters" ):
-                listener.exitSquareParameters(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitSquareParameters" ):
@@ -2357,14 +2101,6 @@ class GGCodeParser ( Parser ):
         def getRuleIndex(self):
             return GGCodeParser.RULE_rectangleStatement
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterRectangleStatement" ):
-                listener.enterRectangleStatement(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitRectangleStatement" ):
-                listener.exitRectangleStatement(self)
-
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitRectangleStatement" ):
                 return visitor.visitRectangleStatement(self)
@@ -2418,14 +2154,6 @@ class GGCodeParser ( Parser ):
         def getRuleIndex(self):
             return GGCodeParser.RULE_circleStatement
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterCircleStatement" ):
-                listener.enterCircleStatement(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitCircleStatement" ):
-                listener.exitCircleStatement(self)
-
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitCircleStatement" ):
                 return visitor.visitCircleStatement(self)
@@ -2477,14 +2205,6 @@ class GGCodeParser ( Parser ):
         def getRuleIndex(self):
             return GGCodeParser.RULE_lineStatement
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterLineStatement" ):
-                listener.enterLineStatement(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitLineStatement" ):
-                listener.exitLineStatement(self)
-
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitLineStatement" ):
                 return visitor.visitLineStatement(self)
@@ -2532,14 +2252,6 @@ class GGCodeParser ( Parser ):
         def getRuleIndex(self):
             return GGCodeParser.RULE_centerClause
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterCenterClause" ):
-                listener.enterCenterClause(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitCenterClause" ):
-                listener.exitCenterClause(self)
-
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitCenterClause" ):
                 return visitor.visitCenterClause(self)
@@ -2584,14 +2296,6 @@ class GGCodeParser ( Parser ):
 
         def getRuleIndex(self):
             return GGCodeParser.RULE_widthClause
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterWidthClause" ):
-                listener.enterWidthClause(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitWidthClause" ):
-                listener.exitWidthClause(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitWidthClause" ):
@@ -2638,14 +2342,6 @@ class GGCodeParser ( Parser ):
         def getRuleIndex(self):
             return GGCodeParser.RULE_lengthClause
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterLengthClause" ):
-                listener.enterLengthClause(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitLengthClause" ):
-                listener.exitLengthClause(self)
-
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitLengthClause" ):
                 return visitor.visitLengthClause(self)
@@ -2690,14 +2386,6 @@ class GGCodeParser ( Parser ):
 
         def getRuleIndex(self):
             return GGCodeParser.RULE_radiusClause
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterRadiusClause" ):
-                listener.enterRadiusClause(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitRadiusClause" ):
-                listener.exitRadiusClause(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitRadiusClause" ):
@@ -2744,14 +2432,6 @@ class GGCodeParser ( Parser ):
         def getRuleIndex(self):
             return GGCodeParser.RULE_fromClause
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterFromClause" ):
-                listener.enterFromClause(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitFromClause" ):
-                listener.exitFromClause(self)
-
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitFromClause" ):
                 return visitor.visitFromClause(self)
@@ -2796,14 +2476,6 @@ class GGCodeParser ( Parser ):
 
         def getRuleIndex(self):
             return GGCodeParser.RULE_toClause
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterToClause" ):
-                listener.enterToClause(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitToClause" ):
-                listener.exitToClause(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitToClause" ):
@@ -2850,14 +2522,6 @@ class GGCodeParser ( Parser ):
         def getRuleIndex(self):
             return GGCodeParser.RULE_coordinatePair
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterCoordinatePair" ):
-                listener.enterCoordinatePair(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitCoordinatePair" ):
-                listener.exitCoordinatePair(self)
-
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitCoordinatePair" ):
                 return visitor.visitCoordinatePair(self)
@@ -2903,14 +2567,6 @@ class GGCodeParser ( Parser ):
 
         def getRuleIndex(self):
             return GGCodeParser.RULE_definitionStatement
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterDefinitionStatement" ):
-                listener.enterDefinitionStatement(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitDefinitionStatement" ):
-                listener.exitDefinitionStatement(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitDefinitionStatement" ):
@@ -2974,14 +2630,6 @@ class GGCodeParser ( Parser ):
         def getRuleIndex(self):
             return GGCodeParser.RULE_defineStatement
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterDefineStatement" ):
-                listener.enterDefineStatement(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitDefineStatement" ):
-                listener.exitDefineStatement(self)
-
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitDefineStatement" ):
                 return visitor.visitDefineStatement(self)
@@ -3031,14 +2679,6 @@ class GGCodeParser ( Parser ):
 
         def getRuleIndex(self):
             return GGCodeParser.RULE_locationDefinition
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterLocationDefinition" ):
-                listener.enterLocationDefinition(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitLocationDefinition" ):
-                listener.exitLocationDefinition(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitLocationDefinition" ):
@@ -3102,14 +2742,6 @@ class GGCodeParser ( Parser ):
         def getRuleIndex(self):
             return GGCodeParser.RULE_setStatement
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterSetStatement" ):
-                listener.enterSetStatement(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitSetStatement" ):
-                listener.exitSetStatement(self)
-
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitSetStatement" ):
                 return visitor.visitSetStatement(self)
@@ -3171,14 +2803,6 @@ class GGCodeParser ( Parser ):
 
         def getRuleIndex(self):
             return GGCodeParser.RULE_conditionalStatement
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterConditionalStatement" ):
-                listener.enterConditionalStatement(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitConditionalStatement" ):
-                listener.exitConditionalStatement(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitConditionalStatement" ):
@@ -3254,14 +2878,6 @@ class GGCodeParser ( Parser ):
         def getRuleIndex(self):
             return GGCodeParser.RULE_loopStatement
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterLoopStatement" ):
-                listener.enterLoopStatement(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitLoopStatement" ):
-                listener.exitLoopStatement(self)
-
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitLoopStatement" ):
                 return visitor.visitLoopStatement(self)
@@ -3327,14 +2943,6 @@ class GGCodeParser ( Parser ):
         def getRuleIndex(self):
             return GGCodeParser.RULE_repeatCount
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterRepeatCount" ):
-                listener.enterRepeatCount(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitRepeatCount" ):
-                listener.exitRepeatCount(self)
-
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitRepeatCount" ):
                 return visitor.visitRepeatCount(self)
@@ -3387,14 +2995,6 @@ class GGCodeParser ( Parser ):
         def getRuleIndex(self):
             return GGCodeParser.RULE_blockStatement
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterBlockStatement" ):
-                listener.enterBlockStatement(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitBlockStatement" ):
-                listener.exitBlockStatement(self)
-
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitBlockStatement" ):
                 return visitor.visitBlockStatement(self)
@@ -3439,14 +3039,6 @@ class GGCodeParser ( Parser ):
         def getRuleIndex(self):
             return GGCodeParser.RULE_condition
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterCondition" ):
-                listener.enterCondition(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitCondition" ):
-                listener.exitCondition(self)
-
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitCondition" ):
                 return visitor.visitCondition(self)
@@ -3486,14 +3078,6 @@ class GGCodeParser ( Parser ):
 
         def getRuleIndex(self):
             return GGCodeParser.RULE_expression
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterExpression" ):
-                listener.enterExpression(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitExpression" ):
-                listener.exitExpression(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitExpression" ):
@@ -3538,14 +3122,6 @@ class GGCodeParser ( Parser ):
 
         def getRuleIndex(self):
             return GGCodeParser.RULE_comparisonExpression
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterComparisonExpression" ):
-                listener.enterComparisonExpression(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitComparisonExpression" ):
-                listener.exitComparisonExpression(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitComparisonExpression" ):
@@ -3596,14 +3172,6 @@ class GGCodeParser ( Parser ):
 
         def getRuleIndex(self):
             return GGCodeParser.RULE_comparisonTail
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterComparisonTail" ):
-                listener.enterComparisonTail(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitComparisonTail" ):
-                listener.exitComparisonTail(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitComparisonTail" ):
@@ -3665,14 +3233,6 @@ class GGCodeParser ( Parser ):
         def getRuleIndex(self):
             return GGCodeParser.RULE_additiveExpression
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterAdditiveExpression" ):
-                listener.enterAdditiveExpression(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitAdditiveExpression" ):
-                listener.exitAdditiveExpression(self)
-
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitAdditiveExpression" ):
                 return visitor.visitAdditiveExpression(self)
@@ -3722,14 +3282,6 @@ class GGCodeParser ( Parser ):
 
         def getRuleIndex(self):
             return GGCodeParser.RULE_additiveTail
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterAdditiveTail" ):
-                listener.enterAdditiveTail(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitAdditiveTail" ):
-                listener.exitAdditiveTail(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitAdditiveTail" ):
@@ -3791,14 +3343,6 @@ class GGCodeParser ( Parser ):
         def getRuleIndex(self):
             return GGCodeParser.RULE_multiplicativeExpression
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterMultiplicativeExpression" ):
-                listener.enterMultiplicativeExpression(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitMultiplicativeExpression" ):
-                listener.exitMultiplicativeExpression(self)
-
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitMultiplicativeExpression" ):
                 return visitor.visitMultiplicativeExpression(self)
@@ -3848,14 +3392,6 @@ class GGCodeParser ( Parser ):
 
         def getRuleIndex(self):
             return GGCodeParser.RULE_multiplicativeTail
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterMultiplicativeTail" ):
-                listener.enterMultiplicativeTail(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitMultiplicativeTail" ):
-                listener.exitMultiplicativeTail(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitMultiplicativeTail" ):
@@ -3919,14 +3455,6 @@ class GGCodeParser ( Parser ):
 
         def getRuleIndex(self):
             return GGCodeParser.RULE_unaryExpression
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterUnaryExpression" ):
-                listener.enterUnaryExpression(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitUnaryExpression" ):
-                listener.exitUnaryExpression(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitUnaryExpression" ):
@@ -3995,14 +3523,6 @@ class GGCodeParser ( Parser ):
 
         def getRuleIndex(self):
             return GGCodeParser.RULE_primaryExpression
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterPrimaryExpression" ):
-                listener.enterPrimaryExpression(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitPrimaryExpression" ):
-                listener.exitPrimaryExpression(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitPrimaryExpression" ):
@@ -4080,14 +3600,6 @@ class GGCodeParser ( Parser ):
         def getRuleIndex(self):
             return GGCodeParser.RULE_comparisonOperator
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterComparisonOperator" ):
-                listener.enterComparisonOperator(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitComparisonOperator" ):
-                listener.exitComparisonOperator(self)
-
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitComparisonOperator" ):
                 return visitor.visitComparisonOperator(self)
@@ -4135,14 +3647,6 @@ class GGCodeParser ( Parser ):
 
         def getRuleIndex(self):
             return GGCodeParser.RULE_addOperator
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterAddOperator" ):
-                listener.enterAddOperator(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitAddOperator" ):
-                listener.exitAddOperator(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitAddOperator" ):
@@ -4192,14 +3696,6 @@ class GGCodeParser ( Parser ):
         def getRuleIndex(self):
             return GGCodeParser.RULE_mulOperator
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterMulOperator" ):
-                listener.enterMulOperator(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitMulOperator" ):
-                listener.exitMulOperator(self)
-
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitMulOperator" ):
                 return visitor.visitMulOperator(self)
@@ -4248,14 +3744,6 @@ class GGCodeParser ( Parser ):
         def getRuleIndex(self):
             return GGCodeParser.RULE_numericValue
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterNumericValue" ):
-                listener.enterNumericValue(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitNumericValue" ):
-                listener.exitNumericValue(self)
-
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitNumericValue" ):
                 return visitor.visitNumericValue(self)
@@ -4300,14 +3788,6 @@ class GGCodeParser ( Parser ):
 
         def getRuleIndex(self):
             return GGCodeParser.RULE_measure
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterMeasure" ):
-                listener.enterMeasure(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitMeasure" ):
-                listener.exitMeasure(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitMeasure" ):

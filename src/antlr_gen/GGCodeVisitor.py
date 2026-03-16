@@ -1,4 +1,4 @@
-# Generated from src/grammar/GGCode.g4 by ANTLR 4.9.3
+# Generated from C:\Users\klyuk\ML\ELSD\src\grammar\GGCode.g4 by ANTLR 4.9.3
 from antlr4 import *
 if __name__ is not None and "." in __name__:
     from .GGCodeParser import GGCodeParser

@@ -59,13 +59,13 @@ Furthermore, \textbf{Fabrication Lab (FabLab) Managers and Makers} frequently en
 
 The significance of this problem stems from the inefficiency and risk inherent in the current workflow.
 
-\textbf{G-code is not Human-Friendly:} Reading G-code is akin to reading assembly language. It requires significant mental effort to map coordinates to physical space. This opacity hinders debugging. If a machine behaves unexpectedly, identifying the culprit line among thousands is a needle-in-a-haystack problem~\cite{tiro_rapid_2025}.
+First, G-code is inherently not human-friendly. Reading G-code is akin to reading assembly language, requiring significant mental effort to map coordinate values to physical space. This opacity hinders debugging; if a machine behaves unexpectedly, identifying the culprit line among thousands is essentially a needle-in-a-haystack problem~\cite{tiro_rapid_2025}.
 
-\textbf{Manual Editing is Error-Prone:} Manual modifications are often text-based search-and-replace operations. These are fragile. Modifying a feed rate globally might accidentally affect rapid travel moves if not done carefully. The lack of semantic validation means the machine will attempt to execute physically impossible or dangerous commands if they are syntactically valid G-code~\cite{staggs_manipulation_2022}.
+Second, manual editing is error-prone. Modifications are often text-based search-and-replace operations, which are fragile and risky. Modifying a feed rate globally might accidentally affect rapid travel moves if not done carefully. Crucially, the lack of semantic validation means the machine will attempt to execute physically impossible or dangerous commands if they are merely syntactically valid G-code~\cite{staggs_manipulation_2022}.
 
-\textbf{CAM Tools Hide Behavior:} While CAM tools are powerful, they often hide the logic used to generate paths. Users who need to optimize a specific segment of the process are often forced to fight the software's defaults, finding it easier to wish they could just ``write the code'' themselves—if only the code were writable.
+Furthermore, while CAM tools are powerful, they often hide the logic used to generate paths. Users who need to optimize a specific segment of the process are often forced to fight the software's defaults, finding it easier to wish they could simply write the code themselves—if only the code were writable.
 
-\textbf{Customization Difficulty:} In scenarios like mass customization or distributed manufacturing, there is often a need to generate variations of a part programmatically. Generating G-code directly from scripts (e.g., Python) is common but lacks structure and validation, leading to ``spaghetti code'' generators that are hard to maintain.
+Finally, in scenarios like mass customization or distributed manufacturing, there is often a need to generate variations of a part programmatically. Generating G-code directly from scripts (e.g., Python) is common but lacks structure and validation, leading to unmaintainable generators that are hard to debug.
 
 \subsection{Stakeholders}
 
@@ -96,11 +96,11 @@ Modern machines require complex acceleration and deceleration profiles (look-ahe
 
 These technical limitations manifest as tangible inefficiencies in the manufacturing workflow.
 
-\textbf{Slower Workflows and Iteration Cycles:} The inability to quickly edit instructions means that minor changes require a round-trip to the CAD/CAM station. In a prototyping environment, where the machine might differ from the designer's desk, this latency accumulates, slowing down the iteration cycle considerably.
+First, workflows and iteration cycles become significantly slower. The inability to quickly edit instructions means that even minor changes require a complete round-trip to the CAD/CAM station. In a prototyping environment, this latency accumulates, slowing down the iteration cycle considerably.
 
-\textbf{Barriers to Entry:} For students and hobbyists, the learning curve is steep. Understanding why a printer failed requires learning the arcane syntax of G-code to diagnose if the issue was mechanical or software-defined.
+Second, high barriers to entry exist for students and hobbyists. The learning curve for diagnosing machine failures is steep, as understanding why a printer failed often requires deciphering the arcane syntax of G-code.
 
-\textbf{Increased Probability of Human Error:} The cognitive load required to interpret raw G-code leads to fatigue and oversight. In industrial settings, crashes caused by bad code can lead to weeks of downtime and expensive repairs.
+Finally, the probability of human error increases. The cognitive load required to interpret raw G-code leads to fatigue and oversight. In industrial settings, crashes caused by incorrect code can lead to extended downtime and expensive repairs.
 
 \subsection{Scenario: The Modification Bottleneck}
 
@@ -128,7 +128,7 @@ Summary: The current state of affairs forces a trade-off between the safety of t
 
 \section{Proposed Solution}
 
-To address the limitations of G-code and the rigidity of standard CAM workflows, this project proposes the development of a **Copilot Instruction Plan DSL (Domain-Specific Language)**. This language will serve as an intermediate abstraction layer between user intent and machine execution.
+To address the limitations of G-code and the rigidity of standard CAM workflows, this project proposes the development of the **GG-Code DSL (Domain-Specific Language)**. This language will serve as an intermediate abstraction layer between user intent and machine execution.
 
 \subsection{Conceptual Architecture}
 
@@ -207,11 +207,7 @@ An intermediate textual language that compiles to G-code combines the precision 
 
 \textit{Conclusion:} The DSL does not replace CAD/CAM for complex geometry but complements it by handling algorithmic, repetitive, or highly customized machine operations where standard CAM fails. It replaces raw G-code editing entirely~\cite{noauthor_secrets_nodate}.
 
-\section{PBL Problem Map}
-
-This section outlines the Problem-Based Learning (PBL) map for the project, structuring the investigation and solution space.
-
-\subsection{Problem Situation}
+\section{Problem Situation}
 
 The manufacturing industry relies heavily on Computer Numerical Control (CNC) machines to interpret digital designs into physical products. Currently, the industry standard for communicating with these machines is G-code, a language developed in the 1950s. While robust, G-code is cryptic, unstructured, and difficult for humans to read or modify safely.
 
@@ -257,3 +253,155 @@ The project must adhere to \textbf{G-code Standard Compatibility}, ensuring the 
 
 \subsection{Assumptions}
 We assume \textbf{User Knowledge}, meaning the target user understands the basic principles of CNC machining (e.g., coordinate systems, feed rates); the DSL simplifies the \textit{coding}, not the \textit{physics}. We also assume a \textbf{Preprocessing Layer} architecture where the DSL functions as a pre-processor running on a computer to generate a file sent to the machine, rather than a real-time interpreter on the microcontroller. Finally, we assume \textbf{Target Machine Capabilities} include the execution of standard G-code commands.
+
+\chapter{Grammar Specification}
+
+This chapter details the formal grammar design of the GG-Code language. The language is designed to be deterministic, unambiguous, and readable, drawing inspiration from natural language commands while maintaining strict syntactic structure. The grammar is defined using a recursive descent approach, with clear separation between statement types and expression evaluation.
+
+\section{Language Structure}
+The top-level structure of a GG-Code program consists of a sequence of statements. The parser processes these statements sequentially, allowing for a straightforward execution model. Unlike free-form natural language processing, the grammar enforces a rigid structure where every command must begin with a reserved keyword, ensuring predictability and simplifying the compilation process.
+
+\section{Statement Families}
+Statements in GG-Code are categorized into five distinct families: motion, machine control, geometry creation, variable definition, and control flow. This categorization aids in modularizing the parser and semantic analyzer.
+
+\subsection{Motion Commands}
+Motion commands control the physical movement of the machine tool. The primary command is \texttt{Move}, which accepts target coordinates specified either by axis values (e.g., \texttt{X10 Y20}) or by named locations. The grammar also supports stopping and pausing operations, which are critical for multi-stage manufacturing processes.
+
+\subsection{Control Flow Structures}
+To support algorithmic design, the language includes robust control flow mechanisms. The \texttt{Repeat} loop allows for fixed-count iterations, essential for layered manufacturing. Conditional logic is handled via \texttt{If...Then...Else} constructs, enabling the machine to make decisions based on runtime variables or sensor data (simulated).
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/derivation_loop.png}
+    \caption{Derivation Tree for a Repeat Loop}
+    \label{fig:tree_loop}
+\end{figure}
+
+Figure \ref{fig:tree_loop} illustrates the syntactic structure of a loop, showing how the \texttt{RepeatStatement} node encapsulates the count expression and the block of statements to be executed.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/derivation_conditional.png}
+    \caption{Derivation Tree for a Conditional Statement}
+    \label{fig:tree_cond}
+\end{figure}
+
+Similarly, Figure \ref{fig:tree_cond} depicts the conditional structure. The grammar ensures that the condition expression is evaluated before executing the \texttt{Then} block or the optional \texttt{Else} block.
+
+\section{Variable Definitions}
+Variables and named locations provide the necessary abstraction to make the code reusable. The \texttt{Define} statement binds a meaningful name to a specific coordinate or location, while the \texttt{Set} statement assigns values to variables used in expressions.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/derivation_definition.png}
+    \caption{Derivation Tree for a Definition Statement}
+    \label{fig:tree_def}
+\end{figure}
+
+As shown in Figure \ref{fig:tree_def}, a definition statement links an identifier to a location definition, which can be a precise coordinate pair or a reference to another point.
+
+\section{Expression Evaluation}
+The grammar supports a rich set of mathematical and relational expressions. Standard operator precedence is enforced through the hierarchical grammar rules (e.g., \texttt{multiplicativeExpression} binds tighter than \texttt{additiveExpression}), enabling complex calculations within command parameters.
+
+\chapter{Parser Implementation}
+
+This chapter describes the implementation strategy for the GG-Code parser, detailing the architectural choices made to ensure the system meets the requirements of determinism, extensibility, and robust error handling identified in the domain analysis.
+
+\section{Design Strategy and Tooling}
+Based on the complexity of the grammar defined in the previous chapter, a decision was made to utilize a specialized parser generator rather than implementing a hand-written recursive descent parser. This choice was driven by several key factors:
+
+\begin{enumerate}
+    \item \textbf{Maintainability:} A formal grammar file serves as a single source of truth for the language syntax. Changes to the language structure can be implemented by modifying the grammar rules rather than rewriting complex parsing logic code.
+    \item \textbf{Robustness:} Generated parsers provide proven, well-tested algorithms for handling edge cases in tokenization and lookahead, reducing the likelihood of parser bugs compared to custom implementation.
+    \item \textbf{Visualization:} The ability to automatically generate parse trees (as seen in Chapter 2) is invaluable for debugging and visualizing the structure of user code.
+\end{enumerate}
+
+The implementation utilizes an LL(*) parsing algorithm. This top-down approach is particularly suitable for our command-oriented language because the initial keywords (e.g., \texttt{Move}, \texttt{Repeat}, \texttt{If}) provide strong predictive cues, allowing the parser to efficiently select the correct rule path without excessive backtracking.
+
+\section{Parser Architecture}
+
+The parsing subsystem is divided into three distinct stages: Lexical Analysis, Syntactic Analysis, and Abstract Syntax Tree (AST) Construction.
+
+\subsection{Lexical Analysis (Tokenization)}
+The first stage involves breaking the raw input text into a stream of meaningful tokens. The lexer is configured to recognize:
+\begin{itemize}
+    \item \textbf{Keywords:} Reserved command words (e.g., \texttt{Move}, \texttt{Pause}) are identified case-insensitively to improve user experience, though they are standardized internally.
+    \item \textbf{Literals:} Numeric values, including integers and decimals, are parsed alongside specific unit tokens (e.g., \texttt{mm}, \texttt{C}) to ensure measurements are correctly engaged.
+    \item \textbf{Identifiers:} User-defined names for variables and locations are distinguished from reserved keywords.
+    \item \textbf{Whitespace and Comments:} Non-significant whitespace and comments are discarded at this stage to simplify the downstream parsing logic.
+\end{itemize}
+
+\subsection{Syntactic Analysis}
+The parser consumes the token stream and verifies that it conforms to the grammar rules. It builds a concrete parse tree where every node represents a grammatical rule application. If the input violates the grammar (e.g., missing a parameter or incorrect nesting), the parser halts and reports a syntax error with line and column information, satisfying the requirement for immediate user feedback.
+
+\subsection{AST Construction}
+While the concrete parse tree perfectly reflects the grammar, it is often too verbose for code generation. The final stage of the parsing functionality is the transformation of this parse tree into an Abstract Syntax Tree (AST).
+
+The AST builder traverses the parse tree (using the Visitor pattern) and simplifies the structure into semantically meaningful objects.
+\begin{itemize}
+    \item Structural tokens (punctuation like curly braces, commas) are discarded.
+    \item Implicit relationships in the grammar are made explicit in the AST nodes (e.g., a \texttt{RepeatStatement} node directly contains a \texttt{count} and a \texttt{body}, rather than a list of generic child nodes).
+    \item Flattening of expression chains occurred, so that `1 + 2 * 3` is represented as a tree of operations respecting precedence.
+\end{itemize}
+
+This constructed AST serves as the clean, validated input for the subsequent Semantic Analysis and Code Generation phases, ensuring that the compiler backend operates on "valid-by-construction" data structures.
+
+\section{Implemented Language Features}
+
+This section serves as a technical reference for the functionality currently supported by the GG-Code parser. The language is designed to cover the core requirements of manufacturing while providing the necessary abstractions for algorithmic design.
+
+\subsection{Motion Control}
+Precision movement is the foundation of G-code generation. The parser supports the following motion commands:
+\begin{itemize}
+    \item \textbf{Move To:} A versatile command \texttt{Move to \textless target\textgreater} that handles various target formats.
+    \begin{itemize}
+        \item \textit{Coordinates:} Direct axis values (e.g., \texttt{X10}, \texttt{Y20}, \texttt{Z5.5}).
+        \item \textit{Predefined Locations:} Reserved keywords \texttt{Base}, \texttt{Origin}, and \texttt{Center\_Point}.
+        \item \textit{User-Defined Locations:} Named targets defined earlier in the script (e.g., \texttt{Move to start\_pos}).
+    \end{itemize}
+    \item \textbf{Stop/Pause:} \texttt{Stop at \textless measure\textgreater} for halting at specific heights (e.g., \texttt{20mm}) and \texttt{Pause at Layer \textless int\textgreater} for layer-based interventions.
+    \item \textbf{Home:} Use \texttt{Home} to home all axes or \texttt{Home X Y} to home specific axes.
+\end{itemize}
+
+\subsection{Machine Configuration}
+These commands manage the physical state of the machine beyond movement.
+\begin{itemize}
+    \item \textbf{Temperature:} \texttt{Temperature \textless val\textgreater C} (e.g., \texttt{Temperature 200C}) sets the extruder or bed temperature.
+    \item \textbf{Wait:} \texttt{Wait for \textless time\textgreater} allows for dwelling, supported in \texttt{Seconds} or \texttt{Minutes}.
+    \item \textbf{Tool Change:} \texttt{Use \textless tool\_name\textgreater} triggers tool change sequences.
+\end{itemize}
+
+\subsection{Geometric Primitives}
+To raise the level of abstraction, the language supports high-level geometry definitions which the compiler expands into appropriate motion paths.
+\begin{itemize}
+    \item \textbf{Square:} \texttt{Add Square Center \textless x\textgreater\ \textless y\textgreater\ Length \textless val\textgreater}
+    \item \textbf{Rectangle:} \texttt{Add Rectangle Center \textless x\textgreater\ \textless y\textgreater\ Width \textless w\textgreater\ Length \textless l\textgreater}
+    \item \textbf{Circle:} \texttt{Add Circle Center \textless x\textgreater\ \textless y\textgreater\ Radius \textless r\textgreater}
+    \item \textbf{Line:} \texttt{Add Line From \textless x1\textgreater\ \textless y1\textgreater\ To \textless x2\textgreater\ \textless y2\textgreater}
+\end{itemize}
+
+\subsection{Control Flow and Logic}
+Unlike standard G-code, GG-Code supports structured programming constructs.
+\begin{itemize}
+    \item \textbf{Repetition:} \texttt{Repeat \textless n\textgreater\ times \{ ... \}} allows for easy iteration of layers or patterns.
+    \item \textbf{Conditional Execution:} \texttt{If \textless condition\textgreater\ then \{ ... \} else \{ ... \}} enables adaptive toolpaths based on variables.
+    \item \textbf{While Loops:} \texttt{While \textless condition\textgreater\ \{ ... \}} for state-dependent iteration.
+\end{itemize}
+
+\subsection{Variables and Expressions}
+The parser includes a full expression engine supporting:
+\begin{itemize}
+    \item \textbf{Definitions:} \texttt{Define \textless name\textgreater\ as \textless location\textgreater} for storing coordinates.
+    \item \textbf{Assignments:} \texttt{Set \textless variable\textgreater\ to \textless expression\textgreater} for dynamic value updates.
+    \item \textbf{Math:} Standard operators (\texttt{+}, \texttt{-}, \texttt{*}, \texttt{/}) and parentheses for grouping.
+    \item \textbf{Comparisons:} Relational operators (\texttt{==}, \texttt{!=}, \texttt{\textless}, \texttt{\textgreater}, \texttt{\textless=}, \texttt{\textgreater=}) for logic gates.
+\end{itemize}
+
+\subsection{Lexical Features}
+To ensure usability, the following lexical features are implemented:
+\begin{itemize}
+    \item \textbf{Case Insensitivity:} Keywords such as \texttt{MOVE} and \texttt{move} are treated identically.
+    \item \textbf{Units:} Explicit support for \texttt{mm}, \texttt{cm}, \texttt{C} (Celsius) attached to literals.
+    \item \textbf{Comments:} C-style line comments (\texttt{//}) and block comments (\texttt{/* ... */}) are supported and stripped during tokenization.
+\end{itemize}
+
