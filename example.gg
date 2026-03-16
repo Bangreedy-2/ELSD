@@ -1,0 +1,19 @@
+Temperature 210C
+Wait for 5 seconds
+
+Move to X0 Y0
+
+Repeat 3 times {
+    Move to X10 Y10
+    Move to X20 Y0
+    Move to X0 Y0
+}
+
+
+If 1 < 2 then {
+    Move to X50 Y50
+}
+
+Add Square Center 30 30 Length 10
+Add Circle Center 60 60 Radius 15
+

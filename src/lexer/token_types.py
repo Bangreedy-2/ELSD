@@ -74,6 +74,7 @@ class TokenType(Enum):
     SECONDS = auto()
     MINUTES = auto()
     USE = auto()
+    HOME = auto()
 
     # Complex Tokens
     MEASURE = auto()

@@ -39,8 +39,17 @@ class RepeatStatement(Statement):
     body: Block
 
 @dataclass
+class WhileStatement(Statement):
+    condition: Expression
+    body: Block
+
+@dataclass
 class StopStatement(Statement):
     measure: Expression # Could be null/literal
+
+@dataclass
+class HomeStatement(Statement):
+    axes: List[str] # ['X', 'Y', 'Z'] or empty for all
 
 @dataclass
 class PauseStatement(Statement):

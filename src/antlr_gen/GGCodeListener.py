@@ -71,6 +71,33 @@ class GGCodeListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by GGCodeParser#homeStatement.
+    def enterHomeStatement(self, ctx:GGCodeParser.HomeStatementContext):
+        pass
+
+    # Exit a parse tree produced by GGCodeParser#homeStatement.
+    def exitHomeStatement(self, ctx:GGCodeParser.HomeStatementContext):
+        pass
+
+
+    # Enter a parse tree produced by GGCodeParser#axisList.
+    def enterAxisList(self, ctx:GGCodeParser.AxisListContext):
+        pass
+
+    # Exit a parse tree produced by GGCodeParser#axisList.
+    def exitAxisList(self, ctx:GGCodeParser.AxisListContext):
+        pass
+
+
+    # Enter a parse tree produced by GGCodeParser#axis.
+    def enterAxis(self, ctx:GGCodeParser.AxisContext):
+        pass
+
+    # Exit a parse tree produced by GGCodeParser#axis.
+    def exitAxis(self, ctx:GGCodeParser.AxisContext):
+        pass
+
+
     # Enter a parse tree produced by GGCodeParser#moveTarget.
     def enterMoveTarget(self, ctx:GGCodeParser.MoveTargetContext):
         pass
@@ -86,6 +113,15 @@ class GGCodeListener(ParseTreeListener):
 
     # Exit a parse tree produced by GGCodeParser#coordinateTarget.
     def exitCoordinateTarget(self, ctx:GGCodeParser.CoordinateTargetContext):
+        pass
+
+
+    # Enter a parse tree produced by GGCodeParser#axisSingle.
+    def enterAxisSingle(self, ctx:GGCodeParser.AxisSingleContext):
+        pass
+
+    # Exit a parse tree produced by GGCodeParser#axisSingle.
+    def exitAxisSingle(self, ctx:GGCodeParser.AxisSingleContext):
         pass
 
 

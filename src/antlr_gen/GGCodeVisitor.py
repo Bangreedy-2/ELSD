@@ -44,6 +44,21 @@ class GGCodeVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by GGCodeParser#homeStatement.
+    def visitHomeStatement(self, ctx:GGCodeParser.HomeStatementContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by GGCodeParser#axisList.
+    def visitAxisList(self, ctx:GGCodeParser.AxisListContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by GGCodeParser#axis.
+    def visitAxis(self, ctx:GGCodeParser.AxisContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by GGCodeParser#moveTarget.
     def visitMoveTarget(self, ctx:GGCodeParser.MoveTargetContext):
         return self.visitChildren(ctx)
@@ -51,6 +66,11 @@ class GGCodeVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by GGCodeParser#coordinateTarget.
     def visitCoordinateTarget(self, ctx:GGCodeParser.CoordinateTargetContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by GGCodeParser#axisSingle.
+    def visitAxisSingle(self, ctx:GGCodeParser.AxisSingleContext):
         return self.visitChildren(ctx)
 
 

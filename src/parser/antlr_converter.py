@@ -6,7 +6,7 @@ from src.ast_nodes.statements import (
     VariableDeclaration, Assignment, MoveStatement, IfStatement,
     RepeatStatement, Block, Statement, StopStatement, PauseStatement,
     TemperatureStatement, WaitStatement, UseStatement, SetStatement,
-    DefineStatement, AddShapeStatement
+    DefineStatement, AddShapeStatement, WhileStatement, HomeStatement
 )
 from src.ast_nodes.expressions import (
     Expression, BinaryExpression, UnaryExpression, Literal, Identifier
@@ -24,7 +24,10 @@ class ASTBuilder(GGCodeVisitor):
         return Program(line=ctx.start.line, column=ctx.start.column, statements=statements)
 
     def visitStatement(self, ctx: GGCodeParser.StatementContext):
-        return self.visit(ctx.getChild(0))
+        # return self.visit(ctx.getChild(0))
+        child = ctx.getChild(0)
+        # print(f"DEBUG: Visiting Statement -> {type(child)}")
+        return self.visit(child)
 
     def visitMoveStatement(self, ctx: GGCodeParser.MoveStatementContext):
         target = self.visit(ctx.moveTarget())
@@ -36,11 +39,33 @@ class ASTBuilder(GGCodeVisitor):
             target=target
         )
 
+    def visitHomeStatement(self, ctx: GGCodeParser.HomeStatementContext):
+
+        # homeStatement: HOME (axisList)?;
+        # axisList: axis (axis)*;
+        axes = []
+        if ctx.axisList():
+            # Iterate through axis children
+            for i in range(ctx.axisList().getChildCount()):
+                # axis: 'X' | 'Y' | 'Z' | 'E';
+                axis_ctx = ctx.axisList().axis(i)
+                if axis_ctx:
+                    axes.append(axis_ctx.getText())
+        return HomeStatement(
+            line=ctx.start.line,
+            column=ctx.start.column,
+            axes=axes
+        )
+
     def visitMoveTarget(self, ctx: GGCodeParser.MoveTargetContext):
         return self.visit(ctx.getChild(0))
 
     def visitCoordinateTarget(self, ctx: GGCodeParser.CoordinateTargetContext):
         return self.visit(ctx.getChild(0))
+
+    def visitAxisSingle(self, ctx: GGCodeParser.AxisSingleContext):
+        val = ctx.AXIS_VALUE().getText()
+        return {'type': 'axis_single', 'values': [val]}
 
     def visitAxisPair(self, ctx: GGCodeParser.AxisPairContext):
         val1 = ctx.AXIS_VALUE(0).getText()
@@ -78,7 +103,16 @@ class ASTBuilder(GGCodeVisitor):
                 count=count,
                 body=body
             )
-        return None # While unsupported
+        elif ctx.WHILE():
+            cond = self.visit(ctx.condition())
+            body = self.visit(ctx.blockStatement())
+            return WhileStatement(
+                line=ctx.start.line,
+                column=ctx.start.column,
+                condition=cond,
+                body=body
+            )
+        return None
 
     def visitBlockStatement(self, ctx: GGCodeParser.BlockStatementContext): # Renamed from visitBlock
         return self.visit(ctx.statementList())
@@ -233,6 +267,40 @@ class ASTBuilder(GGCodeVisitor):
             params=params
         )
 
+    def visitRectangleStatement(self, ctx: GGCodeParser.RectangleStatementContext):
+        # rectangleStatement: RECTANGLE centerClause widthClause lengthClause
+        center = self.visit(ctx.centerClause())
+        width = self.visit(ctx.widthClause())
+        length = self.visit(ctx.lengthClause())
+        return AddShapeStatement(
+            line=ctx.start.line,
+            column=ctx.start.column,
+            shape_type="rectangle",
+            params={**center, **width, **length}
+        )
+
+    def visitCircleStatement(self, ctx: GGCodeParser.CircleStatementContext):
+        # circleStatement: CIRCLE centerClause radiusClause
+        center = self.visit(ctx.centerClause())
+        radius = self.visit(ctx.radiusClause())
+        return AddShapeStatement(
+            line=ctx.start.line,
+            column=ctx.start.column,
+            shape_type="circle",
+            params={**center, **radius}
+        )
+
+    def visitLineStatement(self, ctx: GGCodeParser.LineStatementContext):
+        # lineStatement: LINE fromClause toClause
+        start = self.visit(ctx.fromClause())
+        end = self.visit(ctx.toClause())
+        return AddShapeStatement(
+            line=ctx.start.line,
+            column=ctx.start.column,
+            shape_type="line",
+            params={**start, **end}
+        )
+
     def visitSquareParameters(self, ctx: GGCodeParser.SquareParametersContext):
         # centerClause lengthClause
         center = self.visit(ctx.centerClause())
@@ -244,6 +312,18 @@ class ASTBuilder(GGCodeVisitor):
 
     def visitLengthClause(self, ctx: GGCodeParser.LengthClauseContext):
         return {"length": self.visit(ctx.numericValue())}
+
+    def visitWidthClause(self, ctx: GGCodeParser.WidthClauseContext):
+        return {"width": self.visit(ctx.numericValue())}
+
+    def visitRadiusClause(self, ctx: GGCodeParser.RadiusClauseContext):
+        return {"radius": self.visit(ctx.numericValue())}
+
+    def visitFromClause(self, ctx: GGCodeParser.FromClauseContext):
+        return {"from": self.visit(ctx.coordinatePair())}
+
+    def visitToClause(self, ctx: GGCodeParser.ToClauseContext):
+        return {"to": self.visit(ctx.coordinatePair())}
 
     def visitCoordinatePair(self, ctx: GGCodeParser.CoordinatePairContext):
         x = self.visit(ctx.numericValue(0))
@@ -259,28 +339,16 @@ class ASTBuilder(GGCodeVisitor):
     def visitStatementList(self, ctx: GGCodeParser.StatementListContext):
         stmts = []
         current = ctx
-        # with open("debug_visitor.log", "a") as f:
-        #     f.write(f"Visiting StatementList\n")
-
         while current:
             stmt_ctx = current.statement()
             if not stmt_ctx:
-                # f.write("No statement child\n")
                 break
 
-            # f.write(f"Processing statement: {stmt_ctx.getText()[:20]}...\n")
             res = self.visit(stmt_ctx)
             if res:
                 stmts.append(res)
-                # f.write(f"Got result: {type(res)}\n")
-            else:
-                # f.write("Result is None\n")
-                pass
 
             if current.getChildCount() > 1:
-                # Check if second child is StatementList
-                # In Python runtime, getChild returns Tree/Context
-                # We need to verify if it is StatementListContext
                 next_node = current.getChild(1)
                 if isinstance(next_node, GGCodeParser.StatementListContext):
                     current = next_node

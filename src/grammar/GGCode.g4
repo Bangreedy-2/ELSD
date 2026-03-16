@@ -28,9 +28,15 @@ motionStatement
     : moveStatement
     | stopStatement
     | pauseStatement
+    | homeStatement
     ;
 
 moveStatement: MOVE TO moveTarget;
+
+homeStatement: HOME (axisList)?;
+
+axisList: axis (axis)*;
+axis: 'X' | 'Y' | 'Z' | 'E';
 
 moveTarget
     : coordinateTarget
@@ -39,12 +45,14 @@ moveTarget
     ;
 
 coordinateTarget
-    : axisPair
+    : axisSingle
+    | axisPair
     | axisTriplet
     | measurePair
     | measureTriplet
     ;
 
+axisSingle: AXIS_VALUE;
 axisPair: AXIS_VALUE AXIS_VALUE;
 axisTriplet: AXIS_VALUE AXIS_VALUE AXIS_VALUE;
 measurePair: measure measure;
@@ -193,6 +201,12 @@ FOR: [Ff][Oo][Rr];
 SECONDS: [Ss][Ee][Cc][Oo][Nn][Dd][Ss];
 MINUTES: [Mm][Ii][Nn][Uu][Tt][Ee][Ss];
 USE: [Uu][Ss][Ee];
+HOME: [Hh][Oo][Mm][Ee];
+
+KEY_X: [Xx];
+KEY_Y: [Yy];
+KEY_Z: [Zz];
+KEY_E: [Ee];
 
 // Delimiters & Operators
 LPAREN: '(';
@@ -218,7 +232,7 @@ MEASURE: [0-9]+ ('.' [0-9]+)? ('mm' | 'cm');
 TEMPERATURE_VALUE: [0-9]+ [Cc];
 
 // Axis Value: X25, Y-10.5, Z0
-AXIS_VALUE: [XYZxyz] '-'? [0-9]+ ('.' [0-9]+)?;
+AXIS_VALUE: [XYZxyzEe] '-'? [0-9]+ ('.' [0-9]+)?;
 
 // Identifier: standard variable names
 IDENTIFIER: [a-zA-Z_][a-zA-Z0-9_]*;
