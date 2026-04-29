@@ -20,16 +20,24 @@ import { GCodeVisualizer } from './components/GCodeVisualizer';
 const API_BASE = 'http://localhost:8000';
 
 function App() {
-  const [code, setCode] = useState<string>(`Temperature 200C
-Wait for 1 minutes
-Set speed to 1000
+  const [code, setCode] = useState<string>(`Temperature 210C
+Wait for 5 seconds
 
-Move to X10 Y10
+Move to X0 Y0
 
 Repeat 3 times {
-    Move to X15 Y15
-    Move to X20 Y10
+    Move to X10 Y10
+    Move to X20 Y0
+    Move to X0 Y0
 }
+
+
+If 1 < 2 then {
+    Move to X50 Y50
+}
+
+Add Square Center 30 30 Length 10
+Add Circle Center 60 60 Radius 15
 `);
   const [gcode, setGcode] = useState<string>('');
   const [logs, setLogs] = useState<{type: 'info' | 'error' | 'success', message: string}[]>([]);
@@ -117,6 +125,50 @@ Repeat 3 times {
     });
   };
 
+  const samples: Record<string, string> = {
+    'example.gg': `Temperature 210C
+Wait for 5 seconds
+
+Move to X0 Y0
+
+Repeat 3 times {
+    Move to X10 Y10
+    Move to X20 Y0
+    Move to X0 Y0
+}
+
+
+If 1 < 2 then {
+    Move to X50 Y50
+}
+
+Add Square Center 30 30 Length 10
+Add Circle Center 60 60 Radius 15`,
+    'test_3d.gg': `Temperature 200C
+Set speed to 3000
+Home
+Home X Y
+Move to Z10
+Home Z`,
+    'vis_example.gg': `Define startPoint as 10 10
+Set speed to 100
+
+Repeat 3 times {
+    Move to startPoint
+    Move to X20 Y20
+}
+
+If 1 < 2 then {
+    Stop at 10mm
+}`
+  };
+
+  const handleSampleSelect = (name: string) => {
+    setActiveFile(name);
+    setCode(samples[name]);
+    addLog('info', `Switched to sample: ${name}`);
+  };
+
   return (
     <div className="app-container">
       {/* Sidebar */}
@@ -126,12 +178,18 @@ Repeat 3 times {
           <span>GREATER G-CODE</span>
         </div>
 
-        <div className="section-title">Files</div>
+        <div className="section-title">Samples</div>
         <div className="file-list">
-          <div className={`file-item ${activeFile === 'example.gg' ? 'active' : ''}`} onClick={() => setActiveFile('example.gg')}>
-            <FileCode size={18} />
-            <span>example.gg</span>
-          </div>
+          {Object.keys(samples).map(name => (
+            <div 
+              key={name}
+              className={`file-item ${activeFile === name ? 'active' : ''}`} 
+              onClick={() => handleSampleSelect(name)}
+            >
+              <FileCode size={18} />
+              <span>{name}</span>
+            </div>
+          ))}
           <label className="file-item" style={{ cursor: 'pointer' }}>
             <Upload size={18} />
             <span>Upload .gg</span>
