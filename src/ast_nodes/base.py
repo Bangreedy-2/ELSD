@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 
-@dataclass(kw_only=True)
+@dataclass
 class ASTNode:
-    line: int = 0
-    column: int = 0
+    line: int
+    column: int
 
 from typing import Optional, List, Any
