@@ -1,0 +1,64 @@
+// 3D CUBE: 40x40x40mm centered at (50, 50)
+// Features: layer tracking, Z moves, vertical edges
+
+Temperature 210C
+Home
+Set speed to 3000
+Set layer_height to 10
+
+// Bottom Face Z=0
+Move to X30 Y30
+Move to X70 Y30
+Move to X70 Y70
+Move to X30 Y70
+Move to X30 Y30
+
+// Layer 1 Z=10
+Move to Z10
+Move to X30 Y30
+Move to X70 Y30
+Move to X70 Y70
+Move to X30 Y70
+Move to X30 Y30
+
+// Layer 2 Z=20
+Move to Z20
+Move to X30 Y30
+Move to X70 Y30
+Move to X70 Y70
+Move to X30 Y70
+Move to X30 Y30
+
+// Layer 3 Z=30
+Move to Z30
+Move to X30 Y30
+Move to X70 Y30
+Move to X70 Y70
+Move to X30 Y70
+Move to X30 Y30
+
+// Top Face Z=40
+Move to Z40
+Move to X30 Y30
+Move to X70 Y30
+Move to X70 Y70
+Move to X30 Y70
+Move to X30 Y30
+
+// Vertical Edges
+Move to X30 Y30 Z0
+Move to X30 Y30 Z40
+
+Move to X70 Y30 Z0
+Move to X70 Y30 Z40
+
+Move to X70 Y70 Z0
+Move to X70 Y70 Z40
+
+Move to X30 Y70 Z0
+Move to X30 Y70 Z40
+
+// Finish
+Move to X0 Y0
+Temperature 0C
+Home

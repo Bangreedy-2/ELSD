@@ -72,6 +72,12 @@ class ASTBuilder(GGCodeVisitor):
         val2 = ctx.AXIS_VALUE(1).getText()
         return {'type': 'axis_pair', 'values': [val1, val2]}
 
+    def visitAxisTriplet(self, ctx: GGCodeParser.AxisTripletContext):
+        val1 = ctx.AXIS_VALUE(0).getText()
+        val2 = ctx.AXIS_VALUE(1).getText()
+        val3 = ctx.AXIS_VALUE(2).getText()
+        return {'type': 'axis_triplet', 'values': [val1, val2, val3]}
+
     def visitPointTarget(self, ctx: GGCodeParser.PointTargetContext):
         return {'type': 'point', 'name': ctx.getText()}
 

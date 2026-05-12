@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ELSD — Diagrams</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      padding: 48px 24px 80px;
+    }
+    .header {
+      max-width: 1060px;
+      margin: 0 auto 48px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .header h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+    .header p  { font-size: 13px; color: #64748b; }
+
+    .section {
+      max-width: 1060px;
+      margin: 0 auto 60px;
+    }
+    .section + .section {
+      border-top: 1px solid #e2e8f0;
+      padding-top: 52px;
+    }
+    .section-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: #94a3b8;
+      margin-bottom: 6px;
+    }
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .section-sub {
+      font-size: 12.5px;
+      color: #64748b;
+      margin-bottom: 24px;
+    }
+    .diagram-wrap {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      padding: 28px 20px;
+      margin-bottom: 16px;
+      overflow-x: auto;
+    }
+    .diagram-wrap img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+    .desc {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 18px 22px;
+    }
+    .desc-title {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: #94a3b8;
+      margin-bottom: 10px;
+    }
+    .desc p {
+      font-size: 13px;
+      line-height: 1.65;
+      color: #334155;
+      margin-bottom: 8px;
+    }
+    .desc p:last-child { margin-bottom: 0; }
+    .desc ul { list-style: none; margin-top: 6px; }
+    .desc ul li {
+      font-size: 12.5px;
+      color: #475569;
+      padding: 2px 0 2px 14px;
+      position: relative;
+      line-height: 1.55;
+    }
+    .desc ul li::before { content: '–'; position: absolute; left: 0; color: #cbd5e1; }
+    code {
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 10.5px;
+      background: #f1f5f9;
+      color: #475569;
+      padding: 1px 5px;
+      border-radius: 4px;
+      border: 1px solid #e2e8f0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>ELSD — Project Diagrams</h1>
+    <p>Visual documentation for the Enhanced Language for Shape Description compiler toolchain.</p>
+  </div>
+
+  <!-- PIPELINE -->
+  <div class="section">
+    <div class="section-label">Diagram 1 of 3</div>
+    <div class="section-title">Compiler Pipeline</div>
+    <div class="section-sub">How a <code>.gg</code> source file is transformed into G-code, step by step.</div>
+
+    <div class="diagram-wrap">
+      <img src="images/diagram_pipeline.svg" alt="Compiler Pipeline">
+    </div>
+
+    <div class="desc">
+      <div class="desc-title">What this diagram shows</div>
+      <p>The full compilation path from a human-readable <code>.gg</code> file to machine-ready G-code across 5 distinct stages.</p>
+      <ul>
+        <li><strong>Lexer</strong> — tokenises source text into a flat token stream. Throws <code>SyntaxError</code> on unknown characters. (<code>GGCodeLexer.py</code>)</li>
+        <li><strong>Parser</strong> — validates syntax and builds a concrete parse tree from the token stream. (<code>GGCodeParser.py</code>)</li>
+        <li><strong>AST Builder</strong> — converts the parse tree into typed Python objects: <code>MoveStatement</code>, <code>RepeatStatement</code>, etc. (<code>antlr_converter.py</code>)</li>
+        <li><strong>Semantic Analyzer</strong> — resolves variable scopes, checks types, throws <code>SemanticError</code> on violations. (<code>semantic_analyzer.py</code>)</li>
+        <li><strong>Code Generator</strong> — traverses the validated AST and emits G-code. Tracks Z-axis moves to insert layer annotation comments automatically. (<code>gcode_generator.py</code>)</li>
+        <li><strong>Output</strong> — plain-text G-code string: <code>G0</code>, <code>G1</code>, <code>G2/G3</code>, <code>M104</code>, <code>G28</code>, <code>G4</code> …</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ARCHITECTURE -->
+  <div class="section">
+    <div class="section-label">Diagram 2 of 3</div>
+    <div class="section-title">System Architecture</div>
+    <div class="section-sub">Three-tier layout: browser client, HTTP API server, and the compiler core.</div>
+
+    <div class="diagram-wrap">
+      <img src="images/diagram_architecture.svg" alt="System Architecture">
+    </div>
+
+    <div class="desc">
+      <div class="desc-title">What this diagram shows</div>
+      <p>The project is split into three independent layers. Frontend and backend communicate over HTTP; the compiler core is a pure Python library with no network code of its own.</p>
+      <ul>
+        <li><strong>Frontend</strong> (React 18 + TypeScript, Vite, port 5173) — code editor, sample file picker, 3D WebGL viewer (Three.js / OrbitControls), G-code output panel.</li>
+        <li><strong>Backend</strong> (FastAPI + uvicorn, port 8000) — <code>POST /compile</code>: accepts <code>{code, geometry_mode}</code>, returns <code>{gcode}</code>. <code>POST /upload</code>: accepts a multipart file, returns its text content.</li>
+        <li><strong>Compiler Core</strong> (<code>src/</code>) — <code>run_pipeline()</code> chains all 5 stages. The <code>geometry_mode</code> parameter switches between polyline approximation (<code>segmented</code>) and true G2/G3 arcs (<code>exact</code>).</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- LANGUAGE -->
+  <div class="section">
+    <div class="section-label">Diagram 3 of 3</div>
+    <div class="section-title">GG Language Reference</div>
+    <div class="section-sub">All built-in commands grouped by category, with a side-by-side compilation example.</div>
+
+    <div class="diagram-wrap">
+      <img src="images/diagram_language.svg" alt="GG Language Reference">
+    </div>
+
+    <div class="desc">
+      <div class="desc-title">What this diagram shows</div>
+      <p>The top half organises every built-in command into four categories. The bottom half shows a <code>.gg</code> code snippet next to the G-code it produces after compilation.</p>
+      <ul>
+        <li><strong>Motion</strong> — <code>Move to X Y</code>, <code>Move to Z</code>, <code>Move to X Y Z</code> (triplet), <code>Move to Origin</code>, <code>Home</code>. Emit <code>G1</code> / <code>G28</code>. Z moves trigger automatic layer annotation comments.</li>
+        <li><strong>Geometry</strong> — <code>Add Square</code>, <code>Add Rectangle</code>, <code>Add Circle</code>, <code>Add Line</code>. Circles: 32-point polylines in segmented mode, or a single G2/G3 arc in exact mode.</li>
+        <li><strong>Machine Control</strong> — <code>Temperature</code> → <code>M104</code>, <code>Wait for N seconds/minutes</code> → <code>G4</code>, <code>Set speed to N</code> (feed rate), <code>Set layer_height to N</code> (tracked in <code>gcode_generator.py</code>).</li>
+        <li><strong>Control Flow &amp; Variables</strong> — <code>If/else</code>, <code>Repeat N times</code>, <code>While</code>, <code>Define</code> / <code>Set</code>. Arithmetic: <code>+ - * /</code>. Comparisons: <code>== != &gt; &gt;= &lt; &lt;=</code>. Variables are block-scoped.</li>
+      </ul>
+    </div>
+  </div>
+
+</body>
+</html>

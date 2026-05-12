@@ -1,0 +1,70 @@
+// HEXAGONAL PRISM: R=25mm, H=30mm
+// Center at (50, 50) - 6 vertices, 3 layers
+
+Temperature 205C
+Home
+Set speed to 2500
+Set layer_height to 10
+
+// Bottom Hexagon Z=0
+Move to X75 Y50
+Move to X63 Y72
+Move to X37 Y72
+Move to X25 Y50
+Move to X37 Y28
+Move to X63 Y28
+Move to X75 Y50
+
+// Layer 1 Z=10
+Move to Z10
+Move to X75 Y50
+Move to X63 Y72
+Move to X37 Y72
+Move to X25 Y50
+Move to X37 Y28
+Move to X63 Y28
+Move to X75 Y50
+
+// Layer 2 Z=20
+Move to Z20
+Move to X75 Y50
+Move to X63 Y72
+Move to X37 Y72
+Move to X25 Y50
+Move to X37 Y28
+Move to X63 Y28
+Move to X75 Y50
+
+// Top Hexagon Z=30
+Move to Z30
+Move to X75 Y50
+Move to X63 Y72
+Move to X37 Y72
+Move to X25 Y50
+Move to X37 Y28
+Move to X63 Y28
+Move to X75 Y50
+
+// Vertical Edges
+Move to X75 Y50 Z0
+Move to X75 Y50 Z30
+
+Move to X63 Y72 Z0
+Move to X63 Y72 Z30
+
+Move to X37 Y72 Z0
+Move to X37 Y72 Z30
+
+Move to X25 Y50 Z0
+Move to X25 Y50 Z30
+
+Move to X37 Y28 Z0
+Move to X37 Y28 Z30
+
+Move to X63 Y28 Z0
+Move to X63 Y28 Z30
+
+// Finish
+Move to X0 Y0
+Temperature 0C
+Home

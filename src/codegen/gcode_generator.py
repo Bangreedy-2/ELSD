@@ -15,13 +15,28 @@ class GCodeGenerator:
     def __init__(self, geometry_mode: str = "segmented"):
         self.gcode_lines: List[str] = []
         self.geometry_mode = geometry_mode # "segmented" or "exact" (G2/G3)
-        # For simple evaluation if needed, though usually semantic analysis handled symbols
-        # Ideally, we need to evaluate expressions to generate concrete G-code coords
-        # or propagate variables.
-        # For this minimal version, we will try to evaluate simplistic expressions if possible,
-        # otherwise we might fail if we encounter unresolved variables in move args
-        # (unless we implement a small evaluator here)
         self.env: dict[str, Any] = {}
+        # Layer / height tracking
+        self.layer_height: float = 0.2   # default layer height in mm
+        self.current_layer: int = 0
+        self.current_z: float = 0.0
+
+    def _track_z_move(self, axis_value: str):
+        """Detect Z moves and emit layer annotation comments."""
+        if axis_value.upper().startswith('Z'):
+            try:
+                z_val = float(axis_value[1:])
+                self.current_z = z_val
+                if self.layer_height > 0:
+                    layer_num = round(z_val / self.layer_height)
+                    if layer_num > 0:
+                        self.current_layer = layer_num
+                        self.gcode_lines.append(
+                            f"; === Layer {layer_num} "
+                            f"(Z={z_val:.3f}mm, height={self.layer_height}mm) ==="
+                        )
+            except ValueError:
+                pass
 
     def generate(self, node: Program) -> str:
         self.gcode_lines = []
@@ -55,6 +70,12 @@ class GCodeGenerator:
                     elif t['type'] == 'axis_single':
                         vals = t['values']
                         self.gcode_lines.append(f"G1 {vals[0]}")
+                        self._track_z_move(vals[0])
+                    elif t['type'] == 'axis_triplet':
+                        vals = t['values']
+                        self.gcode_lines.append(f"G1 {vals[0]} {vals[1]} {vals[2]}")
+                        for v in vals:
+                            self._track_z_move(v)
                     elif t['type'] == 'point' and t['name'].lower() == 'origin':
                         self.gcode_lines.append("G1 X0 Y0")
                     elif t['type'] == 'point':
@@ -122,6 +143,9 @@ class GCodeGenerator:
              # Handle special variables that map to G-code commands
              if stmt.identifier.lower() in ["speed", "feedrate"]:
                  self.gcode_lines.append(f"G1 F{val} ; Set Feedrate")
+             elif stmt.identifier.lower() == "layer_height":
+                 self.layer_height = float(val)
+                 self.gcode_lines.append(f"; Layer height configured: {val}mm per layer")
         elif isinstance(stmt, AddShapeStatement):
              self.gcode_lines.append(f"; Add Shape {stmt.shape_type}")
              params = stmt.params

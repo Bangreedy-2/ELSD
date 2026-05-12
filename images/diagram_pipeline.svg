@@ -1,0 +1,96 @@
+﻿<svg width="520" height="720" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <path d="M1,0.5 L7,3 L1,5.5 Z" fill="#9ca3af"/>
+    </marker>
+    <filter id="sh">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#00000010"/>
+    </filter>
+  </defs>
+
+  <rect width="520" height="720" fill="#f8fafc"/>
+  <rect x="0" y="0" width="520" height="3" fill="#3b82f6"/>
+
+  <text x="260" y="33" text-anchor="middle" font-family="'Segoe UI',system-ui,sans-serif" font-size="18" font-weight="700" fill="#0f172a">Compiler Pipeline</text>
+  <text x="260" y="52" text-anchor="middle" font-family="'Segoe UI',system-ui,sans-serif" font-size="10.5" fill="#94a3b8">ELSD — Enhanced Language for Shape Description</text>
+  <line x1="40" y1="63" x2="480" y2="63" stroke="#e2e8f0" stroke-width="1"/>
+
+  <!-- Source input -->
+  <rect x="90" y="74" width="340" height="50" rx="7" fill="#1e3a8a" filter="url(#sh)"/>
+  <text x="260" y="94" text-anchor="middle" font-family="'Segoe UI',system-ui,sans-serif" font-size="13" font-weight="600" fill="white">.gg Source File</text>
+  <text x="260" y="112" text-anchor="middle" font-family="'Segoe UI',system-ui,sans-serif" font-size="10.5" fill="#93c5fd">human-readable shape description</text>
+
+  <line x1="260" y1="124" x2="260" y2="140" stroke="#cbd5e1" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Step 1 -->
+  <rect x="90" y="141" width="340" height="70" rx="7" fill="white" stroke="#e2e8f0" stroke-width="1" filter="url(#sh)"/>
+  <circle cx="117" cy="176" r="13" fill="#eff6ff"/>
+  <text x="117" y="181" text-anchor="middle" font-family="'Segoe UI',system-ui,sans-serif" font-size="11" font-weight="700" fill="#2563eb">1</text>
+  <text x="140" y="166" font-family="'Segoe UI',system-ui,sans-serif" font-size="12.5" font-weight="600" fill="#0f172a">Lexer</text>
+  <text x="140" y="181" font-family="'Consolas','Courier New',monospace" font-size="9.5" fill="#64748b">GGCodeLexer.py  ·  ANTLR4 v4.9.3</text>
+  <text x="140" y="198" font-family="'Segoe UI',system-ui,sans-serif" font-size="10.5" fill="#475569">Source text → token stream</text>
+
+  <line x1="260" y1="211" x2="260" y2="227" stroke="#cbd5e1" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Step 2 -->
+  <rect x="90" y="228" width="340" height="70" rx="7" fill="white" stroke="#e2e8f0" stroke-width="1" filter="url(#sh)"/>
+  <circle cx="117" cy="263" r="13" fill="#eff6ff"/>
+  <text x="117" y="268" text-anchor="middle" font-family="'Segoe UI',system-ui,sans-serif" font-size="11" font-weight="700" fill="#2563eb">2</text>
+  <text x="140" y="253" font-family="'Segoe UI',system-ui,sans-serif" font-size="12.5" font-weight="600" fill="#0f172a">Parser</text>
+  <text x="140" y="268" font-family="'Consolas','Courier New',monospace" font-size="9.5" fill="#64748b">GGCodeParser.py  ·  ANTLR4 v4.9.3</text>
+  <text x="140" y="285" font-family="'Segoe UI',system-ui,sans-serif" font-size="10.5" fill="#475569">Token stream → parse tree (validates syntax)</text>
+
+  <line x1="260" y1="298" x2="260" y2="314" stroke="#cbd5e1" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Step 3 -->
+  <rect x="90" y="315" width="340" height="70" rx="7" fill="white" stroke="#e2e8f0" stroke-width="1" filter="url(#sh)"/>
+  <circle cx="117" cy="350" r="13" fill="#eff6ff"/>
+  <text x="117" y="355" text-anchor="middle" font-family="'Segoe UI',system-ui,sans-serif" font-size="11" font-weight="700" fill="#2563eb">3</text>
+  <text x="140" y="340" font-family="'Segoe UI',system-ui,sans-serif" font-size="12.5" font-weight="600" fill="#0f172a">AST Builder</text>
+  <text x="140" y="355" font-family="'Consolas','Courier New',monospace" font-size="9.5" fill="#64748b">antlr_converter.py</text>
+  <text x="140" y="372" font-family="'Segoe UI',system-ui,sans-serif" font-size="10.5" fill="#475569">Parse tree → typed AST node objects</text>
+
+  <line x1="260" y1="385" x2="260" y2="401" stroke="#cbd5e1" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Step 4 -->
+  <rect x="90" y="402" width="340" height="70" rx="7" fill="white" stroke="#e2e8f0" stroke-width="1" filter="url(#sh)"/>
+  <circle cx="117" cy="437" r="13" fill="#eff6ff"/>
+  <text x="117" y="442" text-anchor="middle" font-family="'Segoe UI',system-ui,sans-serif" font-size="11" font-weight="700" fill="#2563eb">4</text>
+  <text x="140" y="427" font-family="'Segoe UI',system-ui,sans-serif" font-size="12.5" font-weight="600" fill="#0f172a">Semantic Analyzer</text>
+  <text x="140" y="442" font-family="'Consolas','Courier New',monospace" font-size="9.5" fill="#64748b">semantic_analyzer.py</text>
+  <text x="140" y="459" font-family="'Segoe UI',system-ui,sans-serif" font-size="10.5" fill="#475569">Symbol table, scoping, type resolution</text>
+
+  <line x1="260" y1="472" x2="260" y2="488" stroke="#cbd5e1" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Step 5 -->
+  <rect x="90" y="489" width="340" height="70" rx="7" fill="white" stroke="#e2e8f0" stroke-width="1" filter="url(#sh)"/>
+  <circle cx="117" cy="524" r="13" fill="#eff6ff"/>
+  <text x="117" y="529" text-anchor="middle" font-family="'Segoe UI',system-ui,sans-serif" font-size="11" font-weight="700" fill="#2563eb">5</text>
+  <text x="140" y="514" font-family="'Segoe UI',system-ui,sans-serif" font-size="12.5" font-weight="600" fill="#0f172a">Code Generator</text>
+  <text x="140" y="529" font-family="'Consolas','Courier New',monospace" font-size="9.5" fill="#64748b">gcode_generator.py</text>
+  <text x="140" y="546" font-family="'Segoe UI',system-ui,sans-serif" font-size="10.5" fill="#475569">Traverses AST, emits G-code + layer annotations</text>
+
+  <line x1="260" y1="559" x2="260" y2="575" stroke="#cbd5e1" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Output -->
+  <rect x="90" y="576" width="340" height="50" rx="7" fill="#064e3b" filter="url(#sh)"/>
+  <text x="260" y="596" text-anchor="middle" font-family="'Segoe UI',system-ui,sans-serif" font-size="13" font-weight="600" fill="white">G-code Output</text>
+  <text x="260" y="614" text-anchor="middle" font-family="'Consolas','Courier New',monospace" font-size="10.5" fill="#6ee7b7">G0  G1  G2/G3  M104  G28  G4 ...</text>
+
+  <!-- Error note -->
+  <rect x="90" y="644" width="340" height="58" rx="7" fill="#fff7ed" stroke="#fed7aa" stroke-width="1"/>
+  <text x="110" y="663" font-family="'Segoe UI',system-ui,sans-serif" font-size="10.5" font-weight="600" fill="#92400e">Error handling</text>
+  <text x="110" y="679" font-family="'Segoe UI',system-ui,sans-serif" font-size="10.5" fill="#b45309">SyntaxError — thrown by Lexer or Parser</text>
+  <text x="110" y="694" font-family="'Segoe UI',system-ui,sans-serif" font-size="10.5" fill="#b45309">SemanticError — thrown by Semantic Analyzer</text>
+  <!-- Description -->
+  <line x1="30" y1="736" x2="490" y2="736" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="30" y="752" font-family="'Segoe UI',system-ui,sans-serif" font-size="9" font-weight="600" letter-spacing="0.07em" fill="#94a3b8">DESCRIPTION</text>
+  <text x="30" y="772" font-family="'Segoe UI',system-ui,sans-serif" font-size="11" fill="#334155">Full compilation path from a .gg source file to G-code output, through 5 distinct stages.</text>
+  <text x="30" y="794" font-family="'Segoe UI',system-ui,sans-serif" font-size="10.5" fill="#475569">–  Lexer — tokenises source text into a flat token stream  (GGCodeLexer.py)</text>
+  <text x="30" y="810" font-family="'Segoe UI',system-ui,sans-serif" font-size="10.5" fill="#475569">–  Parser — validates syntax and builds a concrete parse tree  (GGCodeParser.py)</text>
+  <text x="30" y="826" font-family="'Segoe UI',system-ui,sans-serif" font-size="10.5" fill="#475569">–  AST Builder — parse tree → typed Python node objects  (antlr_converter.py)</text>
+  <text x="30" y="842" font-family="'Segoe UI',system-ui,sans-serif" font-size="10.5" fill="#475569">–  Semantic Analyzer — resolves variable scopes and types  (semantic_analyzer.py)</text>
+  <text x="30" y="858" font-family="'Segoe UI',system-ui,sans-serif" font-size="10.5" fill="#475569">–  Code Generator — emits G-code; tracks Z-axis moves to insert layer annotation comments</text>
+  <text x="30" y="874" font-family="'Segoe UI',system-ui,sans-serif" font-size="10.5" fill="#475569">–  Output — plain-text G-code string: G0, G1, G2/G3, M104, G28, G4 …</text>
+  <text x="30" y="898" font-family="'Segoe UI',system-ui,sans-serif" font-size="9.5" fill="#94a3b8">SyntaxError is thrown by Lexer or Parser. SemanticError is thrown by Semantic Analyzer.</text>
+</svg>

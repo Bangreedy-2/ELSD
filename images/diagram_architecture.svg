@@ -1,0 +1,110 @@
+﻿<svg width="1000" height="500" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="a1" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <path d="M1,0.5 L7,3 L1,5.5 Z" fill="#64748b"/>
+    </marker>
+    <marker id="a2" markerWidth="8" markerHeight="6" refX="1" refY="3" orient="auto">
+      <path d="M7,0.5 L1,3 L7,5.5 Z" fill="#64748b"/>
+    </marker>
+    <filter id="sh">
+      <feDropShadow dx="0" dy="1" stdDeviation="2.5" flood-color="#0000000d"/>
+    </filter>
+  </defs>
+
+  <rect width="1000" height="500" fill="#f8fafc"/>
+  <rect x="0" y="0" width="1000" height="3" fill="#334155"/>
+
+  <text x="500" y="33" text-anchor="middle" font-family="'Segoe UI',system-ui,sans-serif" font-size="18" font-weight="700" fill="#0f172a">System Architecture</text>
+  <text x="500" y="51" text-anchor="middle" font-family="'Segoe UI',system-ui,sans-serif" font-size="10.5" fill="#94a3b8">ELSD — full-stack compiler toolchain</text>
+  <line x1="40" y1="62" x2="960" y2="62" stroke="#e2e8f0" stroke-width="1"/>
+
+  <!-- FRONTEND column  x=30..270 -->
+  <rect x="30" y="72" width="240" height="360" rx="8" fill="white" stroke="#e2e8f0" stroke-width="1" filter="url(#sh)"/>
+  <rect x="30" y="72" width="240" height="38" rx="8" fill="#6366f1"/>
+  <rect x="30" y="96" width="240" height="14" fill="#6366f1"/>
+  <text x="150" y="96" text-anchor="middle" font-family="'Segoe UI',system-ui,sans-serif" font-size="13" font-weight="600" fill="white">Frontend</text>
+  <text x="150" y="124" text-anchor="middle" font-family="'Segoe UI',system-ui,sans-serif" font-size="11.5" font-weight="600" fill="#1e293b">React 18 + TypeScript</text>
+  <text x="150" y="139" text-anchor="middle" font-family="'Consolas','Courier New',monospace" font-size="9.5" fill="#64748b">Vite · localhost:5173</text>
+  <line x1="50" y1="152" x2="250" y2="152" stroke="#f1f5f9" stroke-width="1"/>
+  <text x="50" y="169" font-family="'Segoe UI',system-ui,sans-serif" font-size="11" fill="#334155">Code editor</text>
+  <text x="50" y="187" font-family="'Segoe UI',system-ui,sans-serif" font-size="11" fill="#334155">Sample file picker</text>
+  <text x="50" y="205" font-family="'Segoe UI',system-ui,sans-serif" font-size="11" fill="#334155">3D G-code visualizer</text>
+  <text x="50" y="223" font-family="'Segoe UI',system-ui,sans-serif" font-size="11" fill="#334155">Output / log panel</text>
+  <line x1="50" y1="236" x2="250" y2="236" stroke="#f1f5f9" stroke-width="1"/>
+  <text x="50" y="253" font-family="'Segoe UI',system-ui,sans-serif" font-size="10.5" font-weight="600" fill="#6366f1">@react-three/fiber</text>
+  <text x="50" y="269" font-family="'Segoe UI',system-ui,sans-serif" font-size="10.5" fill="#64748b">Three.js WebGL renderer</text>
+  <text x="50" y="285" font-family="'Segoe UI',system-ui,sans-serif" font-size="10.5" fill="#64748b">OrbitControls · Grid · Axes</text>
+  <text x="50" y="301" font-family="'Segoe UI',system-ui,sans-serif" font-size="10.5" fill="#64748b">G0 = grey · G1 = indigo</text>
+  <line x1="50" y1="315" x2="250" y2="315" stroke="#f1f5f9" stroke-width="1"/>
+  <text x="50" y="332" font-family="'Consolas','Courier New',monospace" font-size="9.5" fill="#94a3b8">App.tsx</text>
+  <text x="50" y="348" font-family="'Consolas','Courier New',monospace" font-size="9.5" fill="#94a3b8">GCodeVisualizer.tsx</text>
+
+  <!-- ARROWS  gap1: x=270..380  center=325 -->
+  <line x1="272" y1="200" x2="378" y2="200" stroke="#64748b" stroke-width="1.5" marker-end="url(#a1)"/>
+  <text x="325" y="193" text-anchor="middle" font-family="'Consolas','Courier New',monospace" font-size="9" fill="#334155">POST /compile</text>
+  <line x1="378" y1="218" x2="272" y2="218" stroke="#64748b" stroke-width="1.5" marker-end="url(#a2)"/>
+  <text x="325" y="231" text-anchor="middle" font-family="'Consolas','Courier New',monospace" font-size="9" fill="#334155">200 {gcode}</text>
+
+  <line x1="272" y1="262" x2="378" y2="262" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#a1)"/>
+  <text x="325" y="255" text-anchor="middle" font-family="'Consolas','Courier New',monospace" font-size="9" fill="#94a3b8">POST /upload</text>
+  <line x1="378" y1="280" x2="272" y2="280" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#a2)"/>
+  <text x="325" y="293" text-anchor="middle" font-family="'Consolas','Courier New',monospace" font-size="9" fill="#94a3b8">file content</text>
+
+  <!-- BACKEND column  x=380..620 -->
+  <rect x="380" y="72" width="240" height="360" rx="8" fill="white" stroke="#e2e8f0" stroke-width="1" filter="url(#sh)"/>
+  <rect x="380" y="72" width="240" height="38" rx="8" fill="#0284c7"/>
+  <rect x="380" y="96" width="240" height="14" fill="#0284c7"/>
+  <text x="500" y="96" text-anchor="middle" font-family="'Segoe UI',system-ui,sans-serif" font-size="13" font-weight="600" fill="white">Backend</text>
+  <text x="500" y="124" text-anchor="middle" font-family="'Segoe UI',system-ui,sans-serif" font-size="11.5" font-weight="600" fill="#1e293b">FastAPI + Python 3.13</text>
+  <text x="500" y="139" text-anchor="middle" font-family="'Consolas','Courier New',monospace" font-size="9.5" fill="#64748b">uvicorn · localhost:8000</text>
+  <line x1="400" y1="152" x2="600" y2="152" stroke="#f1f5f9" stroke-width="1"/>
+  <text x="400" y="169" font-family="'Segoe UI',system-ui,sans-serif" font-size="10.5" font-weight="600" fill="#0284c7">POST /compile</text>
+  <text x="400" y="185" font-family="'Segoe UI',system-ui,sans-serif" font-size="10.5" fill="#475569">body: {code, geometry_mode}</text>
+  <text x="400" y="201" font-family="'Segoe UI',system-ui,sans-serif" font-size="10.5" fill="#475569">returns: {gcode: string}</text>
+  <line x1="400" y1="214" x2="600" y2="214" stroke="#f1f5f9" stroke-width="1"/>
+  <text x="400" y="231" font-family="'Segoe UI',system-ui,sans-serif" font-size="10.5" font-weight="600" fill="#0284c7">POST /upload</text>
+  <text x="400" y="247" font-family="'Segoe UI',system-ui,sans-serif" font-size="10.5" fill="#475569">multipart file upload</text>
+  <text x="400" y="263" font-family="'Segoe UI',system-ui,sans-serif" font-size="10.5" fill="#475569">returns: file content as text</text>
+  <line x1="400" y1="276" x2="600" y2="276" stroke="#f1f5f9" stroke-width="1"/>
+  <text x="400" y="293" font-family="'Segoe UI',system-ui,sans-serif" font-size="10.5" fill="#475569">CORS enabled (allow all origins)</text>
+  <text x="400" y="309" font-family="'Segoe UI',system-ui,sans-serif" font-size="10.5" fill="#475569">calls run_pipeline(code) internally</text>
+  <line x1="400" y1="322" x2="600" y2="322" stroke="#f1f5f9" stroke-width="1"/>
+  <text x="400" y="339" font-family="'Consolas','Courier New',monospace" font-size="9.5" fill="#94a3b8">server.py</text>
+  <text x="400" y="355" font-family="'Consolas','Courier New',monospace" font-size="9.5" fill="#94a3b8">src/main.py  (pipeline entry)</text>
+
+  <!-- ARROWS  gap2: x=620..730  center=675 -->
+  <line x1="622" y1="215" x2="728" y2="215" stroke="#64748b" stroke-width="1.5" marker-end="url(#a1)"/>
+  <text x="675" y="208" text-anchor="middle" font-family="'Consolas','Courier New',monospace" font-size="9" fill="#334155">run_pipeline()</text>
+  <line x1="728" y1="233" x2="622" y2="233" stroke="#64748b" stroke-width="1.5" marker-end="url(#a2)"/>
+  <text x="675" y="246" text-anchor="middle" font-family="'Consolas','Courier New',monospace" font-size="9" fill="#334155">gcode string</text>
+
+  <!-- COMPILER column  x=730..970 -->
+  <rect x="730" y="72" width="240" height="360" rx="8" fill="white" stroke="#e2e8f0" stroke-width="1" filter="url(#sh)"/>
+  <rect x="730" y="72" width="240" height="38" rx="8" fill="#16a34a"/>
+  <rect x="730" y="96" width="240" height="14" fill="#16a34a"/>
+  <text x="850" y="96" text-anchor="middle" font-family="'Segoe UI',system-ui,sans-serif" font-size="13" font-weight="600" fill="white">Compiler Core</text>
+  <text x="850" y="124" text-anchor="middle" font-family="'Segoe UI',system-ui,sans-serif" font-size="11.5" font-weight="600" fill="#1e293b">Python · ANTLR4 v4.9.3</text>
+  <text x="850" y="139" text-anchor="middle" font-family="'Consolas','Courier New',monospace" font-size="9.5" fill="#64748b">src/  directory</text>
+  <line x1="750" y1="152" x2="950" y2="152" stroke="#f1f5f9" stroke-width="1"/>
+  <text x="750" y="169" font-family="'Segoe UI',system-ui,sans-serif" font-size="10.5" fill="#334155">antlr_gen/  — Lexer + Parser</text>
+  <text x="750" y="185" font-family="'Segoe UI',system-ui,sans-serif" font-size="10.5" fill="#334155">parser/  — AST builder</text>
+  <text x="750" y="201" font-family="'Segoe UI',system-ui,sans-serif" font-size="10.5" fill="#334155">semantic/  — analyzer</text>
+  <text x="750" y="217" font-family="'Segoe UI',system-ui,sans-serif" font-size="10.5" fill="#334155">codegen/  — G-code emitter</text>
+  <line x1="750" y1="230" x2="950" y2="230" stroke="#f1f5f9" stroke-width="1"/>
+  <text x="750" y="247" font-family="'Segoe UI',system-ui,sans-serif" font-size="10.5" font-weight="600" fill="#16a34a">ast_nodes/</text>
+  <text x="750" y="263" font-family="'Segoe UI',system-ui,sans-serif" font-size="10" fill="#64748b">MoveStatement, IfStatement</text>
+  <text x="750" y="279" font-family="'Segoe UI',system-ui,sans-serif" font-size="10" fill="#64748b">RepeatStatement, WhileStatement</text>
+  <text x="750" y="295" font-family="'Segoe UI',system-ui,sans-serif" font-size="10" fill="#64748b">AddShapeStatement, HomeStatement</text>
+  <text x="750" y="311" font-family="'Segoe UI',system-ui,sans-serif" font-size="10" fill="#64748b">TemperatureStatement, WaitStatement</text>
+  <line x1="750" y1="324" x2="950" y2="324" stroke="#f1f5f9" stroke-width="1"/>
+  <text x="750" y="341" font-family="'Consolas','Courier New',monospace" font-size="9.5" fill="#94a3b8">GGCode.g4  (grammar)</text>
+  <text x="750" y="357" font-family="'Consolas','Courier New',monospace" font-size="9.5" fill="#94a3b8">geometry_mode: segmented|exact</text>
+
+  <!-- Bottom note -->
+  <rect x="30" y="450" width="940" height="38" rx="7" fill="white" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="150" y="473" text-anchor="middle" font-family="'Segoe UI',system-ui,sans-serif" font-size="10.5" fill="#6366f1">React 18 · TypeScript · Vite · Three.js</text>
+  <line x1="325" y1="458" x2="325" y2="480" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="500" y="473" text-anchor="middle" font-family="'Segoe UI',system-ui,sans-serif" font-size="10.5" fill="#0284c7">FastAPI · Pydantic · uvicorn · python-multipart</text>
+  <line x1="675" y1="458" x2="675" y2="480" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="850" y="473" text-anchor="middle" font-family="'Segoe UI',system-ui,sans-serif" font-size="10.5" fill="#16a34a">Python 3.13 · antlr4-python3-runtime 4.9.3</text>
+</svg>

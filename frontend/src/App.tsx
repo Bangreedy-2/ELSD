@@ -160,7 +160,192 @@ Repeat 3 times {
 
 If 1 < 2 then {
     Stop at 10mm
-}`
+}`,
+    'example_multilayer.gg': `Temperature 210C
+Home
+Set speed to 3000
+Set layer_height to 10
+
+// Bottom Face Z=0
+Move to X30 Y30
+Move to X70 Y30
+Move to X70 Y70
+Move to X30 Y70
+Move to X30 Y30
+
+// Layer 1 Z=10
+Move to Z10
+Move to X30 Y30
+Move to X70 Y30
+Move to X70 Y70
+Move to X30 Y70
+Move to X30 Y30
+
+// Layer 2 Z=20
+Move to Z20
+Move to X30 Y30
+Move to X70 Y30
+Move to X70 Y70
+Move to X30 Y70
+Move to X30 Y30
+
+// Layer 3 Z=30
+Move to Z30
+Move to X30 Y30
+Move to X70 Y30
+Move to X70 Y70
+Move to X30 Y70
+Move to X30 Y30
+
+// Top Face Z=40
+Move to Z40
+Move to X30 Y30
+Move to X70 Y30
+Move to X70 Y70
+Move to X30 Y70
+Move to X30 Y30
+
+// Vertical Edges
+Move to X30 Y30 Z0
+Move to X30 Y30 Z40
+
+Move to X70 Y30 Z0
+Move to X70 Y30 Z40
+
+Move to X70 Y70 Z0
+Move to X70 Y70 Z40
+
+Move to X30 Y70 Z0
+Move to X30 Y70 Z40
+
+// Finish
+Move to X0 Y0
+Temperature 0C
+Home`,
+    'example_spiral.gg': `Temperature 205C
+Home
+Set speed to 2500
+Set layer_height to 10
+
+// Bottom Hexagon Z=0
+Move to X75 Y50
+Move to X63 Y72
+Move to X37 Y72
+Move to X25 Y50
+Move to X37 Y28
+Move to X63 Y28
+Move to X75 Y50
+
+// Layer 1 Z=10
+Move to Z10
+Move to X75 Y50
+Move to X63 Y72
+Move to X37 Y72
+Move to X25 Y50
+Move to X37 Y28
+Move to X63 Y28
+Move to X75 Y50
+
+// Layer 2 Z=20
+Move to Z20
+Move to X75 Y50
+Move to X63 Y72
+Move to X37 Y72
+Move to X25 Y50
+Move to X37 Y28
+Move to X63 Y28
+Move to X75 Y50
+
+// Top Hexagon Z=30
+Move to Z30
+Move to X75 Y50
+Move to X63 Y72
+Move to X37 Y72
+Move to X25 Y50
+Move to X37 Y28
+Move to X63 Y28
+Move to X75 Y50
+
+// Vertical Edges
+Move to X75 Y50 Z0
+Move to X75 Y50 Z30
+
+Move to X63 Y72 Z0
+Move to X63 Y72 Z30
+
+Move to X37 Y72 Z0
+Move to X37 Y72 Z30
+
+Move to X25 Y50 Z0
+Move to X25 Y50 Z30
+
+Move to X37 Y28 Z0
+Move to X37 Y28 Z30
+
+Move to X63 Y28 Z0
+Move to X63 Y28 Z30
+
+// Finish
+Move to X0 Y0
+Temperature 0C
+Home`,
+    'example_pyramid.gg': `Temperature 210C
+Home
+Set speed to 2500
+Set layer_height to 15
+
+// Base Layer Z=0 (60x60)
+Move to X20 Y20
+Move to X80 Y20
+Move to X80 Y80
+Move to X20 Y80
+Move to X20 Y20
+
+// Layer 1 Z=15 (48x48)
+Move to Z15
+Move to X26 Y26
+Move to X74 Y26
+Move to X74 Y74
+Move to X26 Y74
+Move to X26 Y26
+
+// Layer 2 Z=30 (36x36)
+Move to Z30
+Move to X32 Y32
+Move to X68 Y32
+Move to X68 Y68
+Move to X32 Y68
+Move to X32 Y32
+
+// Layer 3 Z=45 (18x18)
+Move to Z45
+Move to X41 Y41
+Move to X59 Y41
+Move to X59 Y59
+Move to X41 Y59
+Move to X41 Y41
+
+// Apex Z=60
+Move to Z60
+Move to X50 Y50
+
+// Diagonal Edges: base corners to apex
+Move to X20 Y20 Z0
+Move to X50 Y50 Z60
+
+Move to X80 Y20 Z0
+Move to X50 Y50 Z60
+
+Move to X80 Y80 Z0
+Move to X50 Y50 Z60
+
+Move to X20 Y80 Z0
+Move to X50 Y50 Z60
+
+// Finish
+Move to X0 Y0
+Temperature 0C
+Home`
   };
 
   const handleSampleSelect = (name: string) => {
