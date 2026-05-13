@@ -1,4 +1,5 @@
 \documentclass{tum_report}
+\usepackage{tikz}
 
 
 \bibliographystyle{tex_files/bibliography/styles/iso690} % downloaded from some chech uni
@@ -24,8 +25,8 @@
     \input{tex_files/midterm1}
     \clearpage
 
-    %\input{tex_files/midterm2}
-    %\clearpage
+    \input{tex_files/midterm2}
+    \clearpage
 
     \input{tex_files/conclusion}
     \clearpage
@@ -36,5 +37,11 @@
     % you can use either .bib format or .tex. Please, do not use both, comment the one you don't need.
     \nocite{*} 
     \bibliography{tex_files/bibliography/bibliography} % .bib
+
+    \appendix
+    \input{tex_files/appendices/project_plan}
+    \clearpage
+    \input{tex_files/appendices/team_contract}
+    \clearpage
 
 \end{document}

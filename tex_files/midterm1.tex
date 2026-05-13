@@ -244,28 +244,298 @@ These are the key differentiators from G-code. \textbf{Variables and Parameters}
 \subsection{Code Generation}
 The system must ensure \textbf{Validity}, meaning the output must be syntactically valid G-code. It must also ensure \textbf{Compatibility}, supporting configuration for different G-code ``flavors'' (e.g., Marlin vs. standard NIST G-code).
 
-\section{Constraints and Assumptions}
-
-The project is bounded by specific constraints and relies on certain assumptions to be feasible.
-
-\subsection{Constraints}
-The project must adhere to \textbf{G-code Standard Compatibility}, ensuring the generated output adheres to the RS-274 standard (or common industry variations), as we cannot invent a new protocol that requires firmware changes on the machines. \textbf{Safety} is paramount; the DSL compiler must not generate instructions that are inherently dangerous (e.g., negative extrusion, movement beyond physical limits if dimensions are known). Finally, \textbf{Determinism} dictates that the compilation process must be deterministic, where the same DSL input always produces the exact same G-code output.
-
-\subsection{Assumptions}
-We assume \textbf{User Knowledge}, meaning the target user understands the basic principles of CNC machining (e.g., coordinate systems, feed rates); the DSL simplifies the \textit{coding}, not the \textit{physics}. We also assume a \textbf{Preprocessing Layer} architecture where the DSL functions as a pre-processor running on a computer to generate a file sent to the machine, rather than a real-time interpreter on the microcontroller. Finally, we assume \textbf{Target Machine Capabilities} include the execution of standard G-code commands.
 
 \chapter{Grammar Specification}
 
-This chapter details the formal grammar design of the GG-Code language. The language is designed to be deterministic, unambiguous, and readable, drawing inspiration from natural language commands while maintaining strict syntactic structure. The grammar is defined using a recursive descent approach, with clear separation between statement types and expression evaluation.
+\section{Overview}
 
-\section{Language Structure}
-The top-level structure of a GG-Code program consists of a sequence of statements. The parser processes these statements sequentially, allowing for a straightforward execution model. Unlike free-form natural language processing, the grammar enforces a rigid structure where every command must begin with a reserved keyword, ensuring predictability and simplifying the compilation process.
+GGCode is a domain-specific imperative language designed for motion control, machine operations, and geometric construction. A program consists of a sequence of statements executed in order.
+
+\section{Lexical Considerations}
+
+\subsection{Case Sensitivity}
+Keywords are case-insensitive. Identifiers are case-sensitive.
+
+\subsection{Whitespace and Comments}
+Whitespace (spaces, tabs, newlines) is ignored.
+
+\begin{itemize}
+    \item Line comments: \texttt{// ...}
+    \item Block comments: \texttt{/* ... */}
+\end{itemize}
+
+\subsection{Identifiers}
+\(
+\langle identifier \rangle \rightarrow \langle letter \rangle (\langle letter \rangle \mid \langle digit \rangle)^*
+\)
+
+\subsection{Literals}
+\begin{itemize}
+    \item Integer: \texttt{123}
+    \item Decimal: \texttt{12.5}
+    \item Measure: \texttt{20mm}, \texttt{2.5cm}
+    \item Temperature: \texttt{200C}
+    \item Axis value: \texttt{X10}, \texttt{Y-5.5}
+\end{itemize}
+
+\section{Meta-Notation}
+
+\begin{itemize}
+    \item $\langle x \rangle$ denotes a nonterminal
+    \item terminals are written in \textbf{bold}
+    \item $|$ denotes alternatives
+    \item $*$ means zero or more
+    \item $+$ means one or more
+    \item $(\cdot)?$ means optional
+\end{itemize}
+
+\section{Program Structure}
+
+\(
+\langle program \rangle \rightarrow \langle statementList \rangle\ EOF
+\)
+
+\(
+\langle statementList \rangle \rightarrow \langle statement \rangle^+
+\)
+
+\(
+\langle statement \rangle \rightarrow \langle simpleStatement \rangle \mid \langle compoundStatement \rangle
+\)
+
+\section{Statements}
+
+\subsection{Simple Statements}
+
+\(
+\langle simpleStatement \rangle \rightarrow
+\langle motionStatement \rangle
+\mid \langle machineStatement \rangle
+\mid \langle geometryStatement \rangle
+\mid \langle definitionStatement \rangle
+\)
+
+\subsection{Compound Statements}
+
+\(
+\langle compoundStatement \rangle \rightarrow
+\langle conditionalStatement \rangle
+\mid \langle loopStatement \rangle
+\mid \langle blockStatement \rangle
+\)
+
+\section{Motion Commands}
+
+\(
+\langle motionStatement \rangle \rightarrow
+\langle moveStatement \rangle
+\mid \langle stopStatement \rangle
+\mid \langle pauseStatement \rangle
+\mid \langle homeStatement \rangle
+\)
+
+\(
+\langle moveStatement \rangle \rightarrow \textbf{MOVE TO} \ \langle moveTarget \rangle
+\)
+
+\(
+\langle homeStatement \rangle \rightarrow \textbf{HOME} \ \langle axisList \rangle?
+\)
+
+\(
+\langle axisList \rangle \rightarrow \langle axis \rangle^+
+\)
+
+\(
+\langle axis \rangle \rightarrow \textbf{X} \mid \textbf{Y} \mid \textbf{Z} \mid \textbf{E}
+\)
+
+\subsection{Targets}
+
+\(
+\langle moveTarget \rangle \rightarrow
+\langle coordinateTarget \rangle
+\mid \langle pointTarget \rangle
+\mid \langle namedTarget \rangle
+\)
+
+\(
+\langle coordinateTarget \rangle \rightarrow
+\langle axisSingle \rangle
+\mid \langle axisPair \rangle
+\mid \langle axisTriplet \rangle
+\mid \langle measurePair \rangle
+\mid \langle measureTriplet \rangle
+\)
+
+\(
+\langle pointTarget \rangle \rightarrow \textbf{BASE} \mid \textbf{CENTER\_POINT} \mid \textbf{ORIGIN}
+\)
+
+\(
+\langle namedTarget \rangle \rightarrow IDENTIFIER
+\)
+
+\(
+\langle stopStatement \rangle \rightarrow \textbf{STOP AT} \ \langle measure \rangle
+\)
+
+\(
+\langle pauseStatement \rangle \rightarrow \textbf{PAUSE AT LAYER} \ INTEGER
+\)
+
+\section{Machine Commands}
+
+\(
+\langle machineStatement \rangle \rightarrow
+\langle temperatureStatement \rangle
+\mid \langle waitStatement \rangle
+\mid \langle useStatement \rangle
+\)
+
+\(
+\langle temperatureStatement \rangle \rightarrow \textbf{TEMPERATURE} \ \langle temperatureValue \rangle
+\)
+
+\(
+\langle waitStatement \rangle \rightarrow \textbf{WAIT FOR} \ \langle durationValue \rangle
+\)
+
+\(
+\langle useStatement \rangle \rightarrow \textbf{USE} \ IDENTIFIER
+\)
+
+\(
+\langle durationValue \rangle \rightarrow INTEGER\ \textbf{SECONDS} \mid INTEGER\ \textbf{MINUTES}
+\)
+
+\section{Geometry Commands}
+
+\(
+\langle geometryStatement \rangle \rightarrow \textbf{ADD} \ \langle shapeStatement \rangle
+\)
+
+\(
+\langle shapeStatement \rangle \rightarrow
+\langle squareStatement \rangle
+\mid \langle rectangleStatement \rangle
+\mid \langle circleStatement \rangle
+\mid \langle lineStatement \rangle
+\)
+
+\(
+\langle squareStatement \rangle \rightarrow \textbf{SQUARE} \ \langle centerClause \rangle \ \langle lengthClause \rangle
+\)
+
+\(
+\langle rectangleStatement \rangle \rightarrow \textbf{RECTANGLE} \ \langle centerClause \rangle \ \langle widthClause \rangle \ \langle lengthClause \rangle
+\)
+
+\(
+\langle circleStatement \rangle \rightarrow \textbf{CIRCLE} \ \langle centerClause \rangle \ \langle radiusClause \rangle
+\)
+
+\(
+\langle lineStatement \rangle \rightarrow \textbf{LINE} \ \langle fromClause \rangle \ \langle toClause \rangle
+\)
+
+\section{Definitions}
+
+\(
+\langle definitionStatement \rangle \rightarrow
+\langle defineStatement \rangle
+\mid \langle setStatement \rangle
+\)
+
+\(
+\langle defineStatement \rangle \rightarrow \textbf{DEFINE} \ IDENTIFIER \ \textbf{AS} \ \langle locationDefinition \rangle
+\)
+
+\(
+\langle setStatement \rangle \rightarrow \textbf{SET} \ IDENTIFIER \ \textbf{TO} \ \langle expression \rangle
+\)
+
+\section{Control Flow}
+
+\(
+\langle conditionalStatement \rangle \rightarrow
+\textbf{IF} \ \langle condition \rangle \ \textbf{THEN} \ \langle blockStatement \rangle \ (\textbf{ELSE} \ \langle blockStatement \rangle)?
+\)
+
+\(
+\langle loopStatement \rangle \rightarrow
+\textbf{REPEAT} \ \langle repeatCount \rangle \ \textbf{TIMES} \ \langle blockStatement \rangle
+\mid \textbf{WHILE} \ \langle condition \rangle \ \langle blockStatement \rangle
+\)
+
+\(
+\langle blockStatement \rangle \rightarrow \{ \ \langle statementList \rangle \ \}
+\)
+
+\section{Expressions}
+
+\(
+\langle expression \rangle \rightarrow \langle comparisonExpression \rangle
+\)
+
+\(
+\langle comparisonExpression \rangle \rightarrow
+\langle additiveExpression \rangle
+(\langle comparisonOperator \rangle \langle additiveExpression \rangle)^*
+\)
+
+\(
+\langle additiveExpression \rangle \rightarrow
+\langle multiplicativeExpression \rangle
+(\langle addOperator \rangle \langle multiplicativeExpression \rangle)^*
+\)
+
+\(
+\langle multiplicativeExpression \rangle \rightarrow
+\langle unaryExpression \rangle
+(\langle mulOperator \rangle \langle unaryExpression \rangle)^*
+\)
+
+\(
+\langle unaryExpression \rangle \rightarrow
+- \langle unaryExpression \rangle
+\mid \langle primaryExpression \rangle
+\)
+
+\(
+\langle primaryExpression \rangle \rightarrow
+\langle numericValue \rangle
+\mid IDENTIFIER
+\mid ( \langle expression \rangle )
+\)
+
+\section{Operators}
+
+\(
+\langle comparisonOperator \rangle \rightarrow == \mid != \mid < \mid <= \mid > \mid >=
+\)
+
+\(
+\langle addOperator \rangle \rightarrow + \mid -
+\)
+
+\(
+\langle mulOperator \rangle \rightarrow * \mid /
+\)
+
+\section{Notes}
+
+\begin{itemize}
+    \item Execution is sequential unless altered by control statements.
+    \item Expressions follow standard arithmetic precedence.
+    \item Blocks define execution scopes.
+\end{itemize}
 
 \section{Statement Families}
 Statements in GG-Code are categorized into five distinct families: motion, machine control, geometry creation, variable definition, and control flow. This categorization aids in modularizing the parser and semantic analyzer.
 
 \subsection{Motion Commands}
-Motion commands control the physical movement of the machine tool. The primary command is \texttt{Move}, which accepts target coordinates specified either by axis values (e.g., \texttt{X10 Y20}) or by named locations. The grammar also supports stopping and pausing operations, which are critical for multi-stage manufacturing processes.
+Motion commands control the physical movement of the machine tool. The primary command is \texttt{Move}, which accepts target coordinates specified either by axis values (e.g., \texttt{X10}, \texttt{Y20}) or by named locations. The grammar also supports stopping and pausing operations, which are critical for multi-stage manufacturing processes.
 
 \subsection{Control Flow Structures}
 To support algorithmic design, the language includes robust control flow mechanisms. The \texttt{Repeat} loop allows for fixed-count iterations, essential for layered manufacturing. Conditional logic is handled via \texttt{If...Then...Else} constructs, enabling the machine to make decisions based on runtime variables or sensor data (simulated).
@@ -288,15 +558,17 @@ Figure \ref{fig:tree_loop} illustrates the syntactic structure of a loop, showin
 
 Similarly, Figure \ref{fig:tree_cond} depicts the conditional structure. The grammar ensures that the condition expression is evaluated before executing the \texttt{Then} block or the optional \texttt{Else} block.
 
-\section{Variable Definitions}
-Variables and named locations provide the necessary abstraction to make the code reusable. The \texttt{Define} statement binds a meaningful name to a specific coordinate or location, while the \texttt{Set} statement assigns values to variables used in expressions.
-
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.8\textwidth]{images/derivation_definition.png}
     \caption{Derivation Tree for a Definition Statement}
     \label{fig:tree_def}
 \end{figure}
+
+\section{Variable Definitions}
+Variables and named locations provide the necessary abstraction to make the code reusable. The \texttt{Define} statement binds a meaningful name to a specific coordinate or location, while the \texttt{Set} statement assigns values to variables used in expressions.
+
+
 
 As shown in Figure \ref{fig:tree_def}, a definition statement links an identifier to a location definition, which can be a precise coordinate pair or a reference to another point.
 
@@ -404,4 +676,3 @@ To ensure usability, the following lexical features are implemented:
     \item \textbf{Units:} Explicit support for \texttt{mm}, \texttt{cm}, \texttt{C} (Celsius) attached to literals.
     \item \textbf{Comments:} C-style line comments (\texttt{//}) and block comments (\texttt{/* ... */}) are supported and stripped during tokenization.
 \end{itemize}
-

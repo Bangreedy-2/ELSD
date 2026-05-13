@@ -1,0 +1,198 @@
+\documentclass[12pt, a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{geometry}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{parskip}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{graphicx}
+
+\geometry{
+    a4paper,
+    top=2.5cm,
+    bottom=2.5cm,
+    left=3cm,
+    right=2.5cm
+}
+
+\titleformat{\section}{\large\bfseries}{}{0em}{}[\titlerule]
+\titlespacing{\section}{0pt}{16pt}{8pt}
+
+\hypersetup{colorlinks=false, hidelinks}
+
+\begin{document}
+
+% ──────────────────────────────────────────
+%  HEADER
+% ──────────────────────────────────────────
+\begin{center}
+    {\Large\textbf{Team Contract}}\\[0.4em]
+    \textit{Project: GG-Code -- Domain-Specific Language for Generating and Editing G-Code}\\[0.2em]
+    \textit{Institution: Technical University of Moldova}
+\end{center}
+
+\vspace{1em}
+
+% ──────────────────────────────────────────
+%  1. TEAM MEMBERS
+% ──────────────────────────────────────────
+\section{1. Team Members}
+
+The GG-Code project is developed by the following students from group FAF-241, PBL Team No.~4:
+
+\begin{itemize}[leftmargin=2em, label={--}]
+    \item Andrei Cliucovschi
+    \item Sofia Zhuchikova
+    \item Alexei Luchiciov
+    \item Dragos Nedelea
+\end{itemize}
+
+Each member takes personal responsibility for their assigned tasks and commits to being an active
+and reliable part of the team throughout the project.
+
+% ──────────────────────────────────────────
+%  2. PROJECT OVERVIEW
+% ──────────────────────────────────────────
+\section{2. Project Overview}
+
+GG-Code is a domain-specific language that acts as a human-readable bridge between high-level
+manufacturing intent and the low-level G-code instructions used to control CNC machines, 3D
+printers, and laser engravers. Rather than writing cryptic numeric sequences, users can express
+machine operations in clear, programmable syntax.
+
+The compiler automatically translates GG-Code source files into:
+
+\begin{itemize}[leftmargin=2em, label={--}]
+    \item Standard G-code output compatible with CNC machines and 3D printers
+    \item Motion control sequences (linear movement, arc, home commands)
+    \item Geometric primitive expansions (square, rectangle, circle, line)
+    \item Control flow unrolling (loops, conditionals, variables)
+    \item Machine configuration commands (temperature, tool change, wait)
+\end{itemize}
+
+The language grammar is formally defined using ANTLR4 and compiled through two stages:
+
+\begin{enumerate}[leftmargin=2em]
+    \item Lexical analysis
+    \item Syntactic analysis
+\end{enumerate}
+
+The project deliverables include a domain analysis, a comparative study of existing G-code tools,
+a formal grammar specification, a working parser, and a complete project report written in \LaTeX.
+
+% ──────────────────────────────────────────
+%  3. ROLES AND RESPONSIBILITIES
+% ──────────────────────────────────────────
+\section{3. Roles and Responsibilities}
+
+Tasks are distributed among team members based on the skills and areas identified during the
+first team meeting on 29 January 2026. Each member is expected to take ownership of their work
+and deliver it on time.
+
+Areas of contribution within the team include:
+
+\begin{itemize}[leftmargin=2em, label={--}]
+    \item \textbf{Grammar Design} -- defining the formal language rules and structure of GG-Code
+    \item \textbf{ANTLR Implementation} -- building the lexer, parser, and AST
+    \item \textbf{Testing and Debugging} -- writing test cases and verifying G-code output correctness
+    \item \textbf{Documentation} -- preparing the \LaTeX\ report, meeting notes, and technical descriptions
+    \item \textbf{Research and Analysis} -- collecting academic sources and performing domain analysis
+\end{itemize}
+
+When a team member faces difficulty with their task, others are expected to step in and help
+rather than waiting for the problem to grow.
+
+% ──────────────────────────────────────────
+%  4. COMMUNICATION
+% ──────────────────────────────────────────
+\section{4. Communication}
+
+The team commits to staying connected and transparent throughout the project:
+
+\begin{itemize}[leftmargin=2em, label={--}]
+    \item Each member keeps the team informed about their progress, blockers, or delays.
+    \item If a deadline cannot be met, the team must be notified at least two days in advance.
+    \item All major decisions are made together and logged in the meeting notes.
+\end{itemize}
+
+The team communicates through the following channels:
+
+\begin{itemize}[leftmargin=2em, label={--}]
+    \item Group chat on a messaging platform -- Telegram
+    \item Weekly sessions with mentor Irina Cojuhari, scheduled on Fridays
+    \item Video calls when in-person attendance is not possible
+\end{itemize}
+
+% ──────────────────────────────────────────
+%  5. WORK EXPECTATIONS
+% ──────────────────────────────────────────
+\section{5. Work Expectations}
+
+Every team member is expected to uphold the following standards:
+
+\begin{enumerate}[leftmargin=2em]
+    \item Deliver assigned tasks by the agreed deadline without waiting to be reminded.
+    \item Submit work that is genuinely thought through, not copy-pasted or AI-generated without review.
+    \item Keep teammates updated on progress at least once per week.
+    \item Treat the time and effort of other members with respect.
+    \item Each member must independently find and describe at least 5 research articles relevant to the project domain.
+\end{enumerate}
+
+% ──────────────────────────────────────────
+%  6. CONFLICT RESOLUTION
+% ──────────────────────────────────────────
+\section{6. Conflict Resolution}
+
+Should any disagreement or tension arise within the team:
+
+\begin{enumerate}[leftmargin=2em]
+    \item The involved members will first try to settle the matter directly through an honest conversation.
+    \item If no agreement is reached, the full team discusses and reaches a decision together.
+    \item As a last resort, the situation is brought to mentor Irina Cojuhari, whose guidance will be considered final.
+\end{enumerate}
+
+% ──────────────────────────────────────────
+%  7. CONTRIBUTION AND ACCOUNTABILITY
+% ──────────────────────────────────────────
+\section{7. Contribution and Accountability}
+
+Every team member bears responsibility for the quality and completeness of their portion of
+the project.
+
+If a member consistently fails to deliver or participate, this will first be addressed within
+the team. If the situation does not improve, it will be escalated to the mentor and may be
+reflected in the final report.
+
+% ──────────────────────────────────────────
+%  8. AGREEMENT
+% ──────────────────────────────────────────
+\section{8. Agreement}
+
+By signing this contract, each member of the GG-Code team confirms that they understand their
+responsibilities, commit to working collaboratively, and agree to uphold the standards described
+above for the full duration of the ELSD course project.
+
+% ──────────────────────────────────────────
+%  SIGNATURES
+% ──────────────────────────────────────────
+\vspace{2em}
+
+\begin{flushright}
+\textbf{Signatures:}\\[1.5em]
+
+\begin{tabular}{l p{5cm}}
+Andrei Cliucovschi      & \includegraphics[height=1.5cm]{images/Andrei.png} \\[1.5em]
+Sofia Zhuchikova        & \includegraphics[height=1.5cm]{images/Sofia.jpg} \\[1.5em]
+Alexei Luchiciov        & \includegraphics[height=1.5cm]{images/Alexei.png} \\[1.5em]
+Dragos Nedelea          & \includegraphics[height=1.5cm]{images/DragosNedelea.jpg} \\[1.5em]
+\end{tabular}
+
+Date: \underline{5} . \underline{02} . 2026
+\end{flushright}
+
+\end{document}

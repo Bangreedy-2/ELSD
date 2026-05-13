@@ -1,0 +1,88 @@
+\chapter{Project Plan}
+
+% ──────────────────────────────────────────
+%  HEADER
+% ──────────────────────────────────────────
+\begin{center}
+    {\Large\textbf{Project Plan}}\\[0.4em]
+    \textit{Project: GG-Code -- Domain-Specific Language for Generating and Editing G-Code}\\[0.2em]
+    \textit{Institution: Technical University of Moldova}\\[0.2em]
+    \textit{Faculty: Computers, Informatics and Microelectronics}\\[0.2em]
+    \textit{Department: Software Engineering and Automatics}\\[0.2em]
+    \textit{Group: FAF-241 \textbar\ PBL Team No. 4 \textbar\ 2026}\\[0.2em]
+    \textit{Mentor: lect. univ. Irina Cojuhari}
+\end{center}
+
+\vspace{1em}
+
+% ──────────────────────────────────────────
+%  1. PROJECT OVERVIEW
+% ──────────────────────────────────────────
+\section*{1. Project Overview}
+
+GG-Code is a domain-specific language developed as part of the ELSD course at the Technical
+University of Moldova. The project was initiated by PBL Team No.~4, group FAF-241, and the
+domain was officially chosen at the first team meeting on 29 January 2026.
+
+The goal of the project is to create a language that sits between existing CAD/CAM software
+and the low-level G-code instructions used to control CNC machines, 3D printers, and laser
+engravers. Instead of working directly with cryptic numeric machine instructions, users can
+write clear, human-readable code that the compiler then translates into standard G-code.
+
+% ──────────────────────────────────────────
+%  2. PROBLEM
+% ──────────────────────────────────────────
+\section*{2. Problem}
+
+G-code has been the industry standard for controlling manufacturing machines since the 1950s.
+While it works, it was never designed to be written or edited by hand. A single print job can
+produce tens of thousands of lines of code that are nearly impossible to read or safely modify
+without specialist knowledge.
+
+At the same time, the CAD/CAM tools that generate this code treat it as a black box. If a user
+needs to make even a small adjustment, they have no easy way to do it -- they either have to
+regenerate everything from scratch or risk editing raw machine instructions by hand. There is
+no middle ground that gives users both control and clarity.
+
+% ──────────────────────────────────────────
+%  3. PROPOSED SOLUTION
+% ──────────────────────────────────────────
+\section*{3. Proposed Solution}
+
+The project proposes a domain-specific language called GG-Code that fills the gap between
+high-level design tools and low-level machine instructions. The language is designed to be
+readable and writable by people, while still compiling down to valid G-code that any standard
+machine can execute.
+
+GG-Code supports variables, loops, conditions, and reusable operations, which means users can
+describe what they want the machine to do in a natural way without having to think about
+individual motor movements. The compiler handles the translation and checks for errors before
+anything reaches the machine.
+
+The language is formally defined using a context-free grammar and implemented with ANTLR4.
+The project includes a complete lexer, parser, and abstract syntax tree, along with a test
+suite and a full project report written in \LaTeX.
+
+% ──────────────────────────────────────────
+%  4. TEAM
+% ──────────────────────────────────────────
+\section*{4. Team}
+
+The project is developed by four students from group FAF-241 under the supervision of mentor
+Irina Cojuhari. Roles and tasks were distributed at the first team meeting on 29 January 2026.
+
+\begin{itemize}[leftmargin=2em, label={--}]
+    \item Andrei Cliucovschi
+    \item Sofia Zhuchikova
+    \item Alexei Luchiciov
+    \item Dragos Nedelea
+\end{itemize}
+
+% ──────────────────────────────────────────
+%  FOOTER
+% ──────────────────────────────────────────
+\vspace{2em}
+\begin{center}
+    \small\textit{GG-Code Project Plan \textbar\ PBL Team 4 \textbar\ FAF-241 \textbar\ Technical University of Moldova \textbar\ 2026}
+\end{center}
+
