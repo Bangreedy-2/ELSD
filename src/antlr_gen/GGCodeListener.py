@@ -197,6 +197,33 @@ class GGCodeListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by GGCodeParser#layerAnchor.
+    def enterLayerAnchor(self, ctx:GGCodeParser.LayerAnchorContext):
+        pass
+
+    # Exit a parse tree produced by GGCodeParser#layerAnchor.
+    def exitLayerAnchor(self, ctx:GGCodeParser.LayerAnchorContext):
+        pass
+
+
+    # Enter a parse tree produced by GGCodeParser#heightAnchor.
+    def enterHeightAnchor(self, ctx:GGCodeParser.HeightAnchorContext):
+        pass
+
+    # Exit a parse tree produced by GGCodeParser#heightAnchor.
+    def exitHeightAnchor(self, ctx:GGCodeParser.HeightAnchorContext):
+        pass
+
+
+    # Enter a parse tree produced by GGCodeParser#atBlockStatement.
+    def enterAtBlockStatement(self, ctx:GGCodeParser.AtBlockStatementContext):
+        pass
+
+    # Exit a parse tree produced by GGCodeParser#atBlockStatement.
+    def exitAtBlockStatement(self, ctx:GGCodeParser.AtBlockStatementContext):
+        pass
+
+
     # Enter a parse tree produced by GGCodeParser#machineStatement.
     def enterMachineStatement(self, ctx:GGCodeParser.MachineStatementContext):
         pass

@@ -21,6 +21,7 @@ compoundStatement
     : conditionalStatement
     | loopStatement
     | blockStatement
+    | atBlockStatement
     ;
 
 // Motion Commands
@@ -62,7 +63,14 @@ pointTarget: BASE | CENTER_POINT | ORIGIN;
 namedTarget: IDENTIFIER;
 
 stopStatement: STOP AT measure;
-pauseStatement: PAUSE AT LAYER INTERGER;
+pauseStatement: PAUSE (AT anchorTarget)?;
+
+// Layer / height anchoring
+anchorTarget
+    : LAYER INTERGER    # layerAnchor
+    | HEIGHT measure    # heightAnchor
+    ;
+atBlockStatement: AT anchorTarget blockStatement;
 
 // Machine Control Commands
 machineStatement
@@ -171,6 +179,7 @@ STOP: [Ss][Tt][Oo][Pp];
 PAUSE: [Pp][Aa][Uu][Ss][Ee];
 AT: [Aa][Tt];
 LAYER: [Ll][Aa][Yy][Ee][Rr];
+HEIGHT: [Hh][Ee][Ii][Gg][Hh][Tt];
 TEMPERATURE: [Tt][Ee][Mm][Pp][Ee][Rr][Aa][Tt][Uu][Rr][Ee];
 MOVE: [Mm][Oo][Vv][Ee];
 TO: [Tt][Oo];
@@ -245,3 +254,5 @@ DECIMAL: [0-9]+ '.' [0-9]+;
 WS: [ \t\r\n]+ -> skip;
 BLOCK_COMMENT: '/*' .*? '*/' -> skip;
 LINE_COMMENT: '//' ~[\r\n]* -> skip;
+// Defensive: tolerate trailing G-code-style ';' comments inside DSL chunks.
+GCODE_COMMENT: ';' ~[\r\n]* -> skip;

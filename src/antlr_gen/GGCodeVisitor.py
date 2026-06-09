@@ -1,4 +1,4 @@
-# Generated from C:\Users\klyuk\ML\ELSD\src\grammar\GGCode.g4 by ANTLR 4.9.3
+# Generated from src/grammar/GGCode.g4 by ANTLR 4.9.3
 from antlr4 import *
 if __name__ is not None and "." in __name__:
     from .GGCodeParser import GGCodeParser
@@ -111,6 +111,21 @@ class GGCodeVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by GGCodeParser#pauseStatement.
     def visitPauseStatement(self, ctx:GGCodeParser.PauseStatementContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by GGCodeParser#layerAnchor.
+    def visitLayerAnchor(self, ctx:GGCodeParser.LayerAnchorContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by GGCodeParser#heightAnchor.
+    def visitHeightAnchor(self, ctx:GGCodeParser.HeightAnchorContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by GGCodeParser#atBlockStatement.
+    def visitAtBlockStatement(self, ctx:GGCodeParser.AtBlockStatementContext):
         return self.visitChildren(ctx)
 
 
