@@ -43,6 +43,7 @@ Add Circle Center 60 60 Radius 15
   const [logs, setLogs] = useState<{type: 'info' | 'error' | 'success', message: string}[]>([]);
   const [isCompiling, setIsCompiling] = useState(false);
   const [activeFile, setActiveFile] = useState('example.gg');
+  const [editorLanguage, setEditorLanguage] = useState<'ggcode' | 'gcode'>('ggcode');
 
   const addLog = (type: 'info' | 'error' | 'success', message: string) => {
     setLogs(prev => [...prev, { type, message }]);
@@ -74,6 +75,10 @@ Add Circle Center 60 60 Radius 15
       const response = await axios.post(`${API_BASE}/upload`, formData);
       setCode(response.data.content);
       setActiveFile(response.data.filename);
+      // A .gcode upload opens as GG-Code (a superset of G-code) but is
+      // highlighted with the raw-G-code tokenizer for readability.
+      const isGCode = /\.gcode$/i.test(response.data.filename || '');
+      setEditorLanguage(isGCode ? 'gcode' : 'ggcode');
       addLog('info', `Loaded file: ${response.data.filename}`);
     } catch (error: any) {
       addLog('error', `Upload failed: ${error.message}`);
@@ -96,12 +101,14 @@ Add Circle Center 60 60 Radius 15
     monaco.languages.setMonarchTokensProvider('ggcode', {
       tokenizer: {
         root: [
-          [/\b(STOP|PAUSE|AT|LAYER|TEMPERATURE|MOVE|TO|ADD|SQUARE|CENTER|LENGTH|WIDTH|RECTANGLE|CIRCLE|RADIUS|LINE|FROM|BASE|CENTER_POINT|ORIGIN|SET|DEFINE|AS|REPEAT|TIMES|IF|THEN|ELSE|WHILE|WAIT|FOR|SECONDS|MINUTES|USE|HOME)\b/i, 'keyword'],
+          [/\b(STOP|PAUSE|AT|LAYER|HEIGHT|TEMPERATURE|MOVE|TO|ADD|SQUARE|CENTER|LENGTH|WIDTH|RECTANGLE|CIRCLE|RADIUS|LINE|FROM|BASE|CENTER_POINT|ORIGIN|SET|DEFINE|AS|REPEAT|TIMES|IF|THEN|ELSE|WHILE|WAIT|FOR|SECONDS|MINUTES|USE|HOME)\b/i, 'keyword'],
           [/[{}()\[\]]/, 'delimiter'],
           [/[<>!=]=?/, 'operator'],
-          [/\b\d+\b/, 'number'],
+          [/\b\d+(\.\d+)?(mm|cm)\b/i, 'number.measure'],
           [/\b\d+C\b/i, 'number.temperature'],
+          [/\b\d+\b/, 'number'],
           [/\b[XYZxyzEe]-?\d+(\.\d+)?\b/, 'attribute.value'],
+          [/;.*/, 'comment'],
           [/\/\/.*/, 'comment'],
           [/\/\*.*\*\//, 'comment'],
           [/[a-zA-Z_][a-zA-Z0-9_]*/, 'identifier'],
@@ -115,8 +122,39 @@ Add Circle Center 60 60 Radius 15
       rules: [
         { token: 'keyword', foreground: '6366f1', fontStyle: 'bold' },
         { token: 'number', foreground: 'fbbf24' },
+        { token: 'number.measure', foreground: 'fbbf24' },
         { token: 'number.temperature', foreground: 'f87171' },
         { token: 'attribute.value', foreground: '34d399' },
+        { token: 'comment', foreground: '6b7280' },
+      ],
+      colors: {
+        'editor.background': '#0f0f12',
+      }
+    });
+
+    // Raw G-code highlighting (used when a .gcode file is opened).
+    monaco.languages.register({ id: 'gcode' });
+    monaco.languages.setMonarchTokensProvider('gcode', {
+      tokenizer: {
+        root: [
+          [/^\s*;.*/, 'comment'],
+          [/\b[GM]\d+\b/, 'keyword'],          // G0/G1/G28/G92, M104/M109/...
+          [/\bT\d+\b/, 'type'],                // tool select
+          [/\b[FS]-?\d+(\.\d+)?\b/, 'number'], // feedrate / temp param
+          [/\b[XYZEIJ]-?\d+(\.\d+)?\b/, 'attribute.value'],
+          [/;.*/, 'comment'],
+        ]
+      }
+    });
+
+    monaco.editor.defineTheme('gcode-theme', {
+      base: 'vs-dark',
+      inherit: true,
+      rules: [
+        { token: 'keyword', foreground: '60a5fa', fontStyle: 'bold' }, // G/M codes
+        { token: 'type', foreground: 'c084fc' },                       // tool
+        { token: 'number', foreground: 'fbbf24' },
+        { token: 'attribute.value', foreground: '34d399' },            // axis values
         { token: 'comment', foreground: '6b7280' },
       ],
       colors: {
@@ -351,6 +389,7 @@ Home`
   const handleSampleSelect = (name: string) => {
     setActiveFile(name);
     setCode(samples[name]);
+    setEditorLanguage('ggcode');
     addLog('info', `Switched to sample: ${name}`);
   };
 
@@ -377,7 +416,7 @@ Home`
           ))}
           <label className="file-item" style={{ cursor: 'pointer' }}>
             <Upload size={18} />
-            <span>Upload .gg</span>
+            <span>Upload .gg / .gcode</span>
             <input type="file" hidden onChange={handleFileUpload} accept=".gg,.gcode" />
           </label>
         </div>
@@ -422,7 +461,7 @@ Home`
           <div style={{ marginLeft: 'auto', display: 'flex', gap: '1rem' }}>
              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)' }}>
                <Terminal size={14} />
-               <span>DSL Mode</span>
+               <span>{editorLanguage === 'gcode' ? 'G-code Mode' : 'DSL Mode'}</span>
              </div>
           </div>
         </header>
@@ -430,8 +469,8 @@ Home`
         <section className="editor-section">
           <Editor
             height="100%"
-            language="ggcode"
-            theme="ggcode-theme"
+            language={editorLanguage}
+            theme={editorLanguage === 'gcode' ? 'gcode-theme' : 'ggcode-theme'}
             beforeMount={handleEditorWillMount}
             value={code}
             onChange={(val) => setCode(val || '')}
