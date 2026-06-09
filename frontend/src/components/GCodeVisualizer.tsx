@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Grid, PerspectiveCamera } from '@react-three/drei';
 import * as THREE from 'three';
@@ -25,6 +25,8 @@ interface ParsedGCode {
   pausedZs: Set<number>;
   layerBounds: Map<number, Bounds>;
   globalBounds: Bounds;
+  layerZs: number[];               // unique layer heights, ascending (bottom -> top)
+  zToIndex: Map<number, number>;   // layer height -> layer index (0 = bottom)
 }
 
 // Colors
@@ -40,6 +42,7 @@ function parseGCode(gcode: string): ParsedGCode {
   const pausedZs = new Set<number>();
   const layerBounds = new Map<number, Bounds>();
   const globalBounds: Bounds = { minX: Infinity, maxX: -Infinity, minY: Infinity, maxY: -Infinity };
+  const allZs = new Set<number>();
 
   const currentPos = new THREE.Vector3(0, 0, 0);
   let currentSegment: THREE.Vector3[] = [currentPos.clone()];
@@ -71,15 +74,16 @@ function parseGCode(gcode: string): ParsedGCode {
 
     // Layer markers set the active layer height: "; layer 5, Z = 1.100"
     let m = trimmed.match(/^;\s*layer\s+\d+\s*,\s*z\s*=\s*([-\d.]+)/i);
-    if (m) { currentLayerZ = parseFloat(m[1]); return; }
+    if (m) { currentLayerZ = parseFloat(m[1]); allZs.add(currentLayerZ); return; }
     // Friendly / DSL annotations: "; >> Layer 5 (Z=1.100mm)" or "; === Layer 5 (Z=1.100mm..."
     m = trimmed.match(/Layer\s+\d+\s*\(Z=([-\d.]+)mm/i);
-    if (m) { currentLayerZ = parseFloat(m[1]); return; }
+    if (m) { currentLayerZ = parseFloat(m[1]); allZs.add(currentLayerZ); return; }
 
     // Pause detection (PAUSE comment precedes the M0). Stops emit "; STOP" and are
     // intentionally not treated as pauses.
     if (/^;\s*PAUSE\b/i.test(trimmed)) {
       pausedZs.add(currentLayerZ);
+      allZs.add(currentLayerZ);
       return;
     }
 
@@ -101,26 +105,38 @@ function parseGCode(gcode: string): ParsedGCode {
 
       currentSegment.push(currentPos.clone());
       extendBounds(currentLayerZ, currentPos.x, currentPos.y);
+      allZs.add(currentLayerZ);
       lastCommand = command;
     }
   });
 
   flush();
-  return { segments, pausedZs, layerBounds, globalBounds };
+
+  const layerZs = Array.from(allZs).sort((a, b) => a - b);
+  const zToIndex = new Map<number, number>();
+  layerZs.forEach((z, i) => zToIndex.set(z, i));
+
+  return { segments, pausedZs, layerBounds, globalBounds, layerZs, zToIndex };
 }
 
 const PathRenderer = ({
   segments,
   pausedZs,
   highlightPauses,
+  zToIndex,
+  visibleLayers,
 }: {
   segments: Segment[];
   pausedZs: Set<number>;
   highlightPauses: boolean;
+  zToIndex: Map<number, number>;
+  visibleLayers: number;
 }) => {
   return (
     <>
       {segments.map((seg, i) => {
+        const layerIndex = zToIndex.get(seg.layerZ) ?? 0;
+        if (layerIndex >= visibleLayers) return null; // hidden by the layer slider
         const isPaused = highlightPauses && pausedZs.has(seg.layerZ);
         const color = isPaused
           ? (seg.type === 'G0' ? COLOR_PAUSED_TRAVEL : COLOR_PAUSED_EXTRUDE)
@@ -156,14 +172,19 @@ const PauseSurfaces = ({
   pausedZs,
   layerBounds,
   globalBounds,
+  zToIndex,
+  visibleLayers,
 }: {
   pausedZs: Set<number>;
   layerBounds: Map<number, Bounds>;
   globalBounds: Bounds;
+  zToIndex: Map<number, number>;
+  visibleLayers: number;
 }) => {
   return (
     <>
       {Array.from(pausedZs).map((z, i) => {
+        if ((zToIndex.get(z) ?? 0) >= visibleLayers) return null; // hidden by slider
         // Use the paused layer's own XY extent; fall back to the whole-model
         // extent if that layer recorded no moves of its own.
         const b = layerBounds.get(z) ?? globalBounds;
@@ -195,9 +216,24 @@ const PauseSurfaces = ({
 
 export const GCodeVisualizer: React.FC<GCodeVisualizerProps> = ({ gcode }) => {
   const [highlightPauses, setHighlightPauses] = useState(true);
-  const { segments, pausedZs, layerBounds, globalBounds } = useMemo(() => parseGCode(gcode), [gcode]);
+  const { segments, pausedZs, layerBounds, globalBounds, layerZs, zToIndex } =
+    useMemo(() => parseGCode(gcode), [gcode]);
   const pauseCount = pausedZs.size;
   const hasPauses = pauseCount > 0;
+  const layerCount = layerZs.length;
+
+  // How many layers (from the bottom) are rendered. Reset to "all" on recompile.
+  const [visibleLayers, setVisibleLayers] = useState(layerCount);
+  useEffect(() => { setVisibleLayers(layerCount); }, [layerCount]);
+
+  // Indices (bottom = 0) of the paused layers, for ticks on the slider track.
+  const pausedLayerIndices = useMemo(
+    () => Array.from(pausedZs)
+      .map(z => zToIndex.get(z))
+      .filter((i): i is number => i !== undefined)
+      .sort((a, b) => a - b),
+    [pausedZs, zToIndex]
+  );
 
   return (
     <div style={{ width: '100%', height: '100%', background: '#050505' }}>
@@ -218,12 +254,82 @@ export const GCodeVisualizer: React.FC<GCodeVisualizerProps> = ({ gcode }) => {
         <axesHelper args={[20]} />
 
         <React.Suspense fallback={null}>
-          <PathRenderer segments={segments} pausedZs={pausedZs} highlightPauses={highlightPauses} />
+          <PathRenderer
+            segments={segments}
+            pausedZs={pausedZs}
+            highlightPauses={highlightPauses}
+            zToIndex={zToIndex}
+            visibleLayers={visibleLayers}
+          />
           {highlightPauses && (
-            <PauseSurfaces pausedZs={pausedZs} layerBounds={layerBounds} globalBounds={globalBounds} />
+            <PauseSurfaces
+              pausedZs={pausedZs}
+              layerBounds={layerBounds}
+              globalBounds={globalBounds}
+              zToIndex={zToIndex}
+              visibleLayers={visibleLayers}
+            />
           )}
         </React.Suspense>
       </Canvas>
+
+      {/* Layer slider: render N layers from the bottom; pause layers are ticked */}
+      {layerCount > 1 && (
+        <div
+          style={{
+            position: 'absolute',
+            left: 15,
+            right: 15,
+            bottom: 36,
+            padding: '0.5rem 0.85rem',
+            borderRadius: '8px',
+            background: 'rgba(15,15,18,0.8)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            color: '#e5e7eb',
+            fontSize: '0.72rem',
+            fontWeight: 600,
+            userSelect: 'none',
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.3rem' }}>
+            <span>Layers</span>
+            <span style={{ color: '#9ca3af' }}>
+              {visibleLayers} / {layerCount}
+              {hasPauses && <span style={{ color: COLOR_PAUSE_SURFACE }}>  ·  {pauseCount} pause{pauseCount > 1 ? 's' : ''}</span>}
+            </span>
+          </div>
+          <div style={{ position: 'relative' }}>
+            {/* pause ticks on the track */}
+            <div style={{ position: 'absolute', left: 0, right: 0, top: '50%', height: 0, pointerEvents: 'none' }}>
+              {pausedLayerIndices.map(idx => (
+                <div
+                  key={idx}
+                  title={`Pause at layer ${idx + 1}`}
+                  style={{
+                    position: 'absolute',
+                    left: `${((idx + 1) / layerCount) * 100}%`,
+                    transform: 'translate(-50%, -50%)',
+                    width: '3px',
+                    height: '16px',
+                    background: COLOR_PAUSE_SURFACE,
+                    borderRadius: '2px',
+                    boxShadow: `0 0 4px ${COLOR_PAUSE_SURFACE}`,
+                  }}
+                />
+              ))}
+            </div>
+            <input
+              type="range"
+              min={0}
+              max={layerCount}
+              step={1}
+              value={visibleLayers}
+              onChange={(e) => setVisibleLayers(Number(e.target.value))}
+              style={{ width: '100%', accentColor: '#6366f1', position: 'relative', margin: 0 }}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Pause highlight toggle */}
       <label
