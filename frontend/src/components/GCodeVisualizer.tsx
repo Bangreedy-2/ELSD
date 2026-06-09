@@ -63,9 +63,18 @@ function parseGCode(gcode: string): ParsedGCode {
     globalBounds.maxY = Math.max(globalBounds.maxY, y);
   };
 
+  // Flush the in-progress polyline as a segment tagged with the layer/command
+  // that produced it. Called whenever the command type OR the layer changes, so
+  // each layer is its own segment(s) even in files that use only G1 (no G0).
   const flush = () => {
     if (currentSegment.length > 1 && (lastCommand === 'G0' || lastCommand === 'G1')) {
       segments.push({ points: currentSegment, type: lastCommand, layerZ: currentLayerZ });
+    }
+  };
+  const breakSegment = () => {
+    if (currentSegment.length > 1) {
+      flush();
+      currentSegment = [currentPos.clone()];
     }
   };
 
@@ -73,11 +82,14 @@ function parseGCode(gcode: string): ParsedGCode {
     const trimmed = line.trim();
 
     // Layer markers set the active layer height: "; layer 5, Z = 1.100"
-    let m = trimmed.match(/^;\s*layer\s+\d+\s*,\s*z\s*=\s*([-\d.]+)/i);
-    if (m) { currentLayerZ = parseFloat(m[1]); allZs.add(currentLayerZ); return; }
-    // Friendly / DSL annotations: "; >> Layer 5 (Z=1.100mm)" or "; === Layer 5 (Z=1.100mm..."
-    m = trimmed.match(/Layer\s+\d+\s*\(Z=([-\d.]+)mm/i);
-    if (m) { currentLayerZ = parseFloat(m[1]); allZs.add(currentLayerZ); return; }
+    let m = trimmed.match(/^;\s*layer\s+\d+\s*,\s*z\s*=\s*([-\d.]+)/i)
+         || trimmed.match(/Layer\s+\d+\s*\(Z=([-\d.]+)mm/i);
+    if (m) {
+      const z = parseFloat(m[1]);
+      if (z !== currentLayerZ) { breakSegment(); currentLayerZ = z; }
+      allZs.add(currentLayerZ);
+      return;
+    }
 
     // Pause detection (PAUSE comment precedes the M0). Stops emit "; STOP" and are
     // intentionally not treated as pauses.
@@ -90,18 +102,20 @@ function parseGCode(gcode: string): ParsedGCode {
     const parts = trimmed.split(/\s+/);
     const command = parts[0];
     if (command === 'G0' || command === 'G1') {
-      if (command !== lastCommand && currentSegment.length > 1) {
-        flush();
-        currentSegment = [currentPos.clone()];
-      }
-
       const xMatch = line.match(/X([-+]?[0-9]*\.?[0-9]+)/);
       const yMatch = line.match(/Y([-+]?[0-9]*\.?[0-9]+)/);
       const zMatch = line.match(/Z([-+]?[0-9]*\.?[0-9]+)/);
+      const newZ = zMatch ? parseFloat(zMatch[1]) : null;
+      const layerChanged = newZ !== null && newZ !== currentLayerZ;
+
+      // Split on a command change or a new layer (flush keeps the old layer/cmd).
+      if (command !== lastCommand || layerChanged) {
+        breakSegment();
+      }
 
       if (xMatch) currentPos.x = parseFloat(xMatch[1]);
       if (yMatch) currentPos.y = parseFloat(yMatch[1]);
-      if (zMatch) { currentPos.z = parseFloat(zMatch[1]); currentLayerZ = currentPos.z; }
+      if (newZ !== null) { currentPos.z = newZ; currentLayerZ = newZ; }
 
       currentSegment.push(currentPos.clone());
       extendBounds(currentLayerZ, currentPos.x, currentPos.y);
