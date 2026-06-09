@@ -22,7 +22,7 @@ class GCodeGenerator:
         self.current_z: float = 0.0
 
     def _track_z_move(self, axis_value: str):
-        """Detect Z moves and emit layer annotation comments."""
+        """Detect Z moves and emit layer annotation comments (DSL moves)."""
         if axis_value.upper().startswith('Z'):
             try:
                 z_val = float(axis_value[1:])
@@ -35,20 +35,90 @@ class GCodeGenerator:
                             f"; === Layer {layer_num} "
                             f"(Z={z_val:.3f}mm, height={self.layer_height}mm) ==="
                         )
+                        self._record_anchor(layer_num, z_val)
             except ValueError:
                 pass
+
+    def _record_anchor(self, layer: int, z: float):
+        """Record where (in the output line stream) a layer/height begins."""
+        if self._suppress_anchor_record:
+            return
+        idx = len(self.gcode_lines)
+        self.layer_anchors[layer] = idx
+        self.z_anchors.append((z, idx))
 
     def generate(self, node: Program, layer_map: Optional[dict] = None) -> str:
         self.gcode_lines = []
         self.layer_map = layer_map or {}
+        self.layer_anchors: dict[int, int] = {}   # layer number -> output line index
+        self.z_anchors: List[tuple] = []          # (z_height, output line index)
+        self.injections: List[tuple] = []         # (Anchor, [lines])
+        self.warnings: List[str] = []
+        self._suppress_anchor_record = False
+        # Pass A: emit base output, record anchors, collect anchored injections.
         self.visit_program(node)
+        # Pass B: resolve anchors and splice injected blocks into place.
+        self._apply_injections()
         return "\n".join(self.gcode_lines)
 
     def visit_program(self, node: Program):
         self.gcode_lines.append("; Start of GG-Code Program")
         for stmt in node.statements:
-            self.visit_statement(stmt)
+            # Anchored constructs are deferred to the injection phase.
+            if isinstance(stmt, AtBlockStatement):
+                self.injections.append((stmt.anchor, self._render_block(stmt.body)))
+            elif isinstance(stmt, PauseStatement) and stmt.anchor is not None:
+                self.injections.append((stmt.anchor, self._render_pause(stmt.anchor)))
+            else:
+                self.visit_statement(stmt)
         self.gcode_lines.append("; End of Program")
+
+    def _render_block(self, block: Block) -> List[str]:
+        """Render a block's statements into an isolated line list (for injection)."""
+        saved, self.gcode_lines = self.gcode_lines, []
+        self._suppress_anchor_record = True
+        try:
+            self.visit_statement(block)
+            return self.gcode_lines
+        finally:
+            self.gcode_lines = saved
+            self._suppress_anchor_record = False
+
+    def _render_pause(self, anchor) -> List[str]:
+        where = (f"at layer {anchor.layer}" if anchor.kind == "layer"
+                 else f"at height {anchor.height}mm")
+        return [f"; PAUSE {where}", "M0"]
+
+    def _apply_injections(self):
+        z_sorted = sorted(self.z_anchors, key=lambda t: t[0])
+        resolved = []  # (output index, [lines])
+        for anchor, lines in self.injections:
+            idx = self._resolve_anchor(anchor, z_sorted)
+            if idx is not None:
+                resolved.append((idx, lines))
+        # Splice in descending index order so earlier inserts don't shift later ones.
+        for idx, lines in sorted(resolved, key=lambda t: t[0], reverse=True):
+            self.gcode_lines[idx:idx] = lines
+        # Surface warnings as comments near the top of the output.
+        if self.warnings:
+            self.gcode_lines[1:1] = [f"; WARNING: {w}" for w in self.warnings]
+
+    def _resolve_anchor(self, anchor, z_sorted) -> Optional[int]:
+        if anchor.kind == "layer":
+            idx = self.layer_anchors.get(anchor.layer)
+            if idx is None:
+                self.warnings.append(
+                    f"layer {anchor.layer} not found in file; anchored block skipped"
+                )
+            return idx
+        # height: first recorded layer/move whose Z reaches the target height
+        for z, idx in z_sorted:
+            if z >= anchor.height:
+                return idx
+        self.warnings.append(
+            f"height {anchor.height}mm never reached; anchored block skipped"
+        )
+        return None
 
     def visit_statement(self, stmt: Statement):
         if isinstance(stmt, RawGCode):
@@ -59,6 +129,7 @@ class GCodeGenerator:
                 self.current_z = stmt.z
                 # Friendly navigation annotation (hybrid representation).
                 self.gcode_lines.append(f"; >> Layer {stmt.layer} (Z={stmt.z:.3f}mm)")
+                self._record_anchor(stmt.layer, stmt.z)
             return
         if isinstance(stmt, VariableDeclaration):
             val = self.evaluate(stmt.expression)
@@ -125,12 +196,14 @@ class GCodeGenerator:
         elif isinstance(stmt, TemperatureStatement):
              val = self.evaluate(stmt.value)
              self.gcode_lines.append(f"M104 S{val} ; Set Temp")
+        elif isinstance(stmt, AtBlockStatement):
+             # Nested At-block (inside another block): inline its body at this point.
+             self.visit_statement(stmt.body)
         elif isinstance(stmt, PauseStatement):
-             # Anchored pauses are injected in the two-pass phase (Step 3);
-             # an unanchored pause emits inline at the current point.
-             if stmt.anchor is None:
-                 self.gcode_lines.append("; PAUSE")
-                 self.gcode_lines.append("M0") # Marlin pause
+             # Top-level anchored pauses are routed to injection in visit_program;
+             # reaching here means inline context (standalone, or nested in a block).
+             self.gcode_lines.append("; PAUSE")
+             self.gcode_lines.append("M0") # Marlin pause
         elif isinstance(stmt, StopStatement):
              self.gcode_lines.append("; STOP")
              self.gcode_lines.append("M0")
