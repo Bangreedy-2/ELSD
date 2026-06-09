@@ -3,7 +3,7 @@ from src.ast_nodes.program import Program
 from src.ast_nodes.statements import (
     Statement, VariableDeclaration, Assignment, Block, MoveStatement, IfStatement, RepeatStatement,
     StopStatement, PauseStatement, TemperatureStatement, WaitStatement, UseStatement, DefineStatement,
-    SetStatement, AddShapeStatement
+    SetStatement, AddShapeStatement, RawGCode, AtBlockStatement, Anchor
 )
 from src.ast_nodes.expressions import (
     Expression, BinaryExpression, UnaryExpression, Literal, Identifier
@@ -41,7 +41,13 @@ class SemanticAnalyzer:
             self.visit_wait_statement(node)
         elif isinstance(node, AddShapeStatement):
             self.visit_add_shape_statement(node)
-        elif isinstance(node, (StopStatement, PauseStatement, UseStatement)):
+        elif isinstance(node, AtBlockStatement):
+            self.visit_at_block_statement(node)
+        elif isinstance(node, PauseStatement):
+            self._validate_anchor(node.anchor, node)
+        elif isinstance(node, RawGCode):
+            pass # Verbatim passthrough — opaque to semantic analysis
+        elif isinstance(node, (StopStatement, UseStatement)):
             pass # No deep validation yet
         # Expressions
         elif isinstance(node, BinaryExpression):
@@ -142,3 +148,18 @@ class SemanticAnalyzer:
     def visit_add_shape_statement(self, node: AddShapeStatement):
         # Validate params
         pass
+
+    def visit_at_block_statement(self, node: AtBlockStatement):
+        self._validate_anchor(node.anchor, node)
+        self.analyze(node.body)
+
+    def _validate_anchor(self, anchor, node):
+        """Validate anchor structure. Existence (does layer/height exist in the
+        file?) is checked in codegen, where the resolved layer map is known, and
+        surfaced as a warning rather than a hard error."""
+        if anchor is None:
+            return
+        if anchor.kind == "layer" and (anchor.layer is None or anchor.layer < 0):
+            raise SemanticError(f"Invalid layer anchor '{anchor.layer}'", node.line, node.column)
+        if anchor.kind == "height" and (anchor.height is None or anchor.height <= 0):
+            raise SemanticError(f"Invalid height anchor '{anchor.height}'", node.line, node.column)
