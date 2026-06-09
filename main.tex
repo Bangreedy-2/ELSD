@@ -1,5 +1,18 @@
 \documentclass{tum_report}
+
+% tum_report.cls redefines the \year primitive as a title-page macro. pgfmath's
+% random library seeds itself from \time and \year when TikZ loads, so the
+% redefined \year breaks that load. Restore a numeric \year while pgf loads,
+% then hand the class's command back so the title page's \year{...} still works.
+\makeatletter
+\let\tumsavedyear\year
+\def\year{2026}
+\makeatother
 \usepackage{tikz}
+\usetikzlibrary{positioning}
+\makeatletter
+\let\year\tumsavedyear
+\makeatother
 
 
 \bibliographystyle{tex_files/bibliography/styles/iso690} % downloaded from some chech uni
@@ -26,6 +39,9 @@
     \clearpage
 
     \input{tex_files/midterm2}
+    \clearpage
+
+    \input{tex_files/midterm3}
     \clearpage
 
     \input{tex_files/conclusion}
