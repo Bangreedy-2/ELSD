@@ -4,7 +4,7 @@ from src.ast_nodes.program import Program
 from src.ast_nodes.statements import (
     Statement, VariableDeclaration, Assignment, Block, MoveStatement, IfStatement, RepeatStatement,
     TemperatureStatement, PauseStatement, StopStatement, WaitStatement, SetStatement, AddShapeStatement,
-    WhileStatement, HomeStatement
+    WhileStatement, HomeStatement, RawGCode, AtBlockStatement
 )
 from src.ast_nodes.expressions import (
     Expression, BinaryExpression, UnaryExpression, Literal, Identifier
@@ -38,8 +38,9 @@ class GCodeGenerator:
             except ValueError:
                 pass
 
-    def generate(self, node: Program) -> str:
+    def generate(self, node: Program, layer_map: Optional[dict] = None) -> str:
         self.gcode_lines = []
+        self.layer_map = layer_map or {}
         self.visit_program(node)
         return "\n".join(self.gcode_lines)
 
@@ -50,6 +51,15 @@ class GCodeGenerator:
         self.gcode_lines.append("; End of Program")
 
     def visit_statement(self, stmt: Statement):
+        if isinstance(stmt, RawGCode):
+            # Verbatim passthrough — emit exactly as written, no reformatting.
+            self.gcode_lines.append(stmt.text)
+            if stmt.is_layer_marker:
+                self.current_layer = stmt.layer
+                self.current_z = stmt.z
+                # Friendly navigation annotation (hybrid representation).
+                self.gcode_lines.append(f"; >> Layer {stmt.layer} (Z={stmt.z:.3f}mm)")
+            return
         if isinstance(stmt, VariableDeclaration):
             val = self.evaluate(stmt.expression)
             self.env[stmt.identifier] = val
