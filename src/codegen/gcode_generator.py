@@ -116,9 +116,11 @@ class GCodeGenerator:
              val = self.evaluate(stmt.value)
              self.gcode_lines.append(f"M104 S{val} ; Set Temp")
         elif isinstance(stmt, PauseStatement):
-             layer = self.evaluate(stmt.layer)
-             self.gcode_lines.append(f"; PAUSE AT LAYER {layer}")
-             self.gcode_lines.append("M0") # Marlin pause
+             # Anchored pauses are injected in the two-pass phase (Step 3);
+             # an unanchored pause emits inline at the current point.
+             if stmt.anchor is None:
+                 self.gcode_lines.append("; PAUSE")
+                 self.gcode_lines.append("M0") # Marlin pause
         elif isinstance(stmt, StopStatement):
              self.gcode_lines.append("; STOP")
              self.gcode_lines.append("M0")

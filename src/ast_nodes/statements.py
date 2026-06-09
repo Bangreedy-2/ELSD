@@ -52,8 +52,29 @@ class HomeStatement(Statement):
     axes: List[str] # ['X', 'Y', 'Z'] or empty for all
 
 @dataclass
+class Anchor:
+    """A position anchor: either a layer number or a height in mm."""
+    kind: str                          # 'layer' | 'height'
+    layer: Optional[int] = None
+    height: Optional[float] = None     # mm
+
+@dataclass
 class PauseStatement(Statement):
-    layer: Expression
+    anchor: Optional[Anchor] = None    # None => pause inline at current point
+
+@dataclass
+class AtBlockStatement(Statement):
+    """`At layer N { ... }` / `At height H { ... }` — body injected at the anchor."""
+    anchor: Anchor
+    body: Block
+
+@dataclass
+class RawGCode(Statement):
+    """A verbatim run of one or more raw G-code / comment lines (passthrough)."""
+    text: str
+    layer: Optional[int] = None
+    z: Optional[float] = None
+    is_layer_marker: bool = False
 
 @dataclass
 class TemperatureStatement(Statement):
