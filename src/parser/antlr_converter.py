@@ -6,7 +6,8 @@ from src.ast_nodes.statements import (
     VariableDeclaration, Assignment, MoveStatement, IfStatement,
     RepeatStatement, Block, Statement, StopStatement, PauseStatement,
     TemperatureStatement, WaitStatement, UseStatement, SetStatement,
-    DefineStatement, AddShapeStatement, WhileStatement, HomeStatement
+    DefineStatement, AddShapeStatement, WhileStatement, HomeStatement,
+    Anchor, AtBlockStatement
 )
 from src.ast_nodes.expressions import (
     Expression, BinaryExpression, UnaryExpression, Literal, Identifier
@@ -55,6 +56,36 @@ class ASTBuilder(GGCodeVisitor):
             line=ctx.start.line,
             column=ctx.start.column,
             axes=axes
+        )
+
+    # Pause + layer/height anchoring
+    def _parse_measure_mm(self, text: str) -> float:
+        """Parse a MEASURE token (e.g. '2.4mm', '2cm') into millimetres."""
+        text = text.strip().lower()
+        if text.endswith("cm"):
+            return float(text[:-2]) * 10.0
+        if text.endswith("mm"):
+            return float(text[:-2])
+        return float(text)
+
+    def visitLayerAnchor(self, ctx: GGCodeParser.LayerAnchorContext):
+        return Anchor(kind="layer", layer=int(ctx.INTERGER().getText()))
+
+    def visitHeightAnchor(self, ctx: GGCodeParser.HeightAnchorContext):
+        return Anchor(kind="height", height=self._parse_measure_mm(ctx.measure().getText()))
+
+    def visitPauseStatement(self, ctx: GGCodeParser.PauseStatementContext):
+        anchor = self.visit(ctx.anchorTarget()) if ctx.anchorTarget() else None
+        return PauseStatement(line=ctx.start.line, column=ctx.start.column, anchor=anchor)
+
+    def visitAtBlockStatement(self, ctx: GGCodeParser.AtBlockStatementContext):
+        anchor = self.visit(ctx.anchorTarget())
+        body = self.visit(ctx.blockStatement())
+        return AtBlockStatement(
+            line=ctx.start.line,
+            column=ctx.start.column,
+            anchor=anchor,
+            body=body
         )
 
     def visitMoveTarget(self, ctx: GGCodeParser.MoveTargetContext):

@@ -12,32 +12,60 @@ from src.parser.antlr_converter import ASTBuilder
 from src.semantic.semantic_analyzer import SemanticAnalyzer
 from src.semantic.semantic_errors import SemanticError
 from src.codegen.gcode_generator import GCodeGenerator
+from src.preprocessor.line_classifier import classify_lines
+from src.ast_nodes.program import Program
+from src.ast_nodes.statements import Block
 
-def run_pipeline(source_code: str, geometry_mode: str = "segmented") -> str:
-    # 1. Lexing
-    input_stream = InputStream(source_code)
+
+def _parse_dsl_chunk(text: str):
+    """Parse one GG-Code DSL chunk through ANTLR and return its statement list.
+
+    ``visitProgram`` wraps the chunk's statementList in a single Block; unwrap it
+    so top-level constructs (AtBlockStatement, anchored Pause) sit directly in the
+    program's statement list where the generator's injection routing sees them.
+    """
+    input_stream = InputStream(text)
     lexer = GGCodeLexer(input_stream)
     stream = CommonTokenStream(lexer)
     stream.fill()
 
-    # 2. Parsing
     parser = GGCodeParser(stream)
     tree = parser.program()
-
     if parser.getNumberOfSyntaxErrors() > 0:
-        raise SyntaxError("Syntax errors found during parsing.")
+        raise SyntaxError(f"Syntax errors found while parsing GG-Code:\n{text}")
 
-    # 3. AST Construction
     builder = ASTBuilder()
     program_ast = builder.visit(tree)
+    stmts = program_ast.statements
+    if len(stmts) == 1 and isinstance(stmts[0], Block):
+        return stmts[0].statements
+    return stmts
 
-    # 4. Semantic Analysis
+
+def run_pipeline(source_code: str, geometry_mode: str = "segmented") -> str:
+    # 1. Classify lines: raw G-code passes through verbatim, only DSL chunks
+    #    are parsed by ANTLR (keeps 142k-line slicer files interactive).
+    items, layer_map = classify_lines(source_code)
+
+    # 2. Build a single ordered AST: raw nodes interleaved with parsed DSL.
+    statements = []
+    for kind, payload in items:
+        if kind == 'raw':
+            statements.append(payload)
+        else:  # 'dsl'
+            statements.extend(_parse_dsl_chunk(payload))
+    program_ast = Program(line=0, column=0, statements=statements)
+
+    # 3. Semantic Analysis
     analyzer = SemanticAnalyzer()
     analyzer.analyze(program_ast)
 
-    # 5. Code Generation
+    # 4. Code Generation (layer_map informs layer/height anchor resolution)
     generator = GCodeGenerator(geometry_mode=geometry_mode)
-    return generator.generate(program_ast)
+    gcode = generator.generate(program_ast, layer_map=layer_map)
+    for w in generator.warnings:
+        print(f"Warning: {w}", file=sys.stderr)
+    return gcode
 
 def main():
     parser = argparse.ArgumentParser(description="GG-Code to G-code Compiler")
